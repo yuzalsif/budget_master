@@ -1,5 +1,6 @@
 import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
 import 'package:budget_master/features/categories/presentation/screens/categories_screen.dart';
+import 'package:budget_master/features/categories/presentation/screens/category_totals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/app/theme/app_theme.dart';
@@ -61,8 +62,20 @@ class HomePage extends StatelessWidget {
             },
             child: const Text('Manage Categories'),
           ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              // This button now navigates to the screen we just created
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CategoryTotalsScreen(),
+                ),
+              );
+            },
+            child: const Text('View Monthly Totals'),
+          ),
         ],
-      )
+      ),
     );
   }
 }
