@@ -1,7 +1,10 @@
+// lib/features/dashboard/application/dashboard_providers.dart
+
+import 'package:flutter/material.dart'; // Needed for DateTimeRange
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/domain/models/account.dart';
 import 'package:budget_master/features/accounts/application/account_providers.dart';
 import 'package:budget_master/features/transactions/application/transaction_service.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // --- A simple data class to hold all our dashboard data ---
 class DashboardData {
@@ -22,43 +25,68 @@ class DashboardData {
   });
 }
 
-// --- Filter provider to control the date range of the dashboard ---
-enum DashboardDateFilter { thisMonth, thisYear, allTime }
+// --- NEW/UPDATED Filter state management ---
+enum DashboardDateFilter { thisMonth, thisYear, allTime, custom }
 
-final dashboardFilterProvider = StateProvider<DashboardDateFilter>(
-  (ref) => DashboardDateFilter.thisMonth,
+// A dedicated class to hold our filter state
+class DashboardFilterState {
+  final DashboardDateFilter filter;
+  final DateTimeRange? dateRange; // Nullable for non-custom filters
+
+  DashboardFilterState({required this.filter, this.dateRange});
+}
+
+// Update the provider to use our new state class
+final dashboardFilterProvider = StateProvider<DashboardFilterState>(
+  (ref) => DashboardFilterState(filter: DashboardDateFilter.thisMonth),
 );
+// --- END of updated filter state management ---
 
-// --- The Main Dashboard Data Provider ---
-// This provider orchestrates everything. When the filter changes, it re-runs
-// and calculates a new DashboardData object.
+// --- The Main Dashboard Data Provider (Updated to use the new filter state) ---
 final dashboardDataProvider = Provider<DashboardData>((ref) {
-  // Watch the filter to react to changes
-  final filter = ref.watch(dashboardFilterProvider);
+  // Watch the new filter provider
+  final filterState = ref.watch(dashboardFilterProvider);
+  final filter = filterState.filter;
 
   // Get date range based on filter
   final now = DateTime.now();
+
   DateTime startDate;
-  final endDate = now;
+  DateTime endDate;
 
   switch (filter) {
     case DashboardDateFilter.thisMonth:
       startDate = DateTime(now.year, now.month, 1);
+      // End date is the first moment of the *next* month
+      endDate = DateTime(now.year, now.month + 1, 1);
       break;
     case DashboardDateFilter.thisYear:
       startDate = DateTime(now.year, 1, 1);
+      // End date is the first moment of the *next* year
+      endDate = DateTime(now.year + 1, 1, 1);
       break;
     case DashboardDateFilter.allTime:
-      // A very early date to include all transactions
       startDate = DateTime(2000);
+      endDate = DateTime(
+        now.year + 1,
+        1,
+        1,
+      ); // A future date to include everything
+      break;
+    case DashboardDateFilter.custom:
+      final range = filterState.dateRange;
+      startDate = range?.start ?? DateTime(now.year, now.month, 1);
+      // For the end date, take the selected day, and go to the *next* day.
+      endDate = range != null
+          ? DateTime(range.end.year, range.end.month, range.end.day + 1)
+          : DateTime(now.year, now.month, now.day + 1);
       break;
   }
 
-  // Get services and providers we need
+  // The rest of this provider is the same as before
   final accounts = ref.watch(accountsProvider);
   final transactionService = ref.read(transactionServiceProvider);
 
-  // Calculate all the values
   final totalBalance = accounts.fold(
     0.0,
     (sum, account) => sum + account.balance,
@@ -72,7 +100,6 @@ final dashboardDataProvider = Provider<DashboardData>((ref) {
     endDate: endDate,
   );
 
-  // We only want the expense part for the bar chart
   final categoryExpenseTotals = Map.fromEntries(
     categoryTotalsRaw.entries
         .where((entry) => entry.value.withdrawals > 0)
@@ -85,7 +112,6 @@ final dashboardDataProvider = Provider<DashboardData>((ref) {
         .map((entry) => MapEntry(entry.key, entry.value.deposits)),
   );
 
-  // Assemble and return the final data object
   return DashboardData(
     totalBalance: totalBalance,
     totalIncome: incomeExpense.income,

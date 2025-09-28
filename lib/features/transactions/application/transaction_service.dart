@@ -58,8 +58,10 @@ class TransactionService {
     });
   }
 
+  // lib/features/transactions/application/transaction_service.dart
+
   List<Transaction> getFilteredTransactions(TransactionFilter filter) {
-    // --- Part 1: Build the database query for what works (linking) ---
+    // Start with a base query builder, ordered by date
     final queryBuilder = _transactionBox.query()
       ..order(Transaction_.date, flags: Order.descending);
 
@@ -79,30 +81,36 @@ class TransactionService {
       );
     }
 
-    // --- Part 2: Execute the partial query ---
-    // This gets a list that is already sorted and filtered by account/category
-    final partiallyFilteredList = queryBuilder.build().find();
-    // queryBuilder.close(); // It's good practice to close the builder
+    // --- THIS IS THE CORRECTION ---
+    // 1. Build the Query object from the builder.
+    final query = queryBuilder.build();
+    // 2. Execute find() on the Query object.
+    final partiallyFilteredList = query.find();
+    // 3. Close the Query object to release resources.
+    query.close();
+    // ----------------------------
 
-    // --- Part 3: Perform manual date filtering in Dart ---
+    // The rest of the method is the same and is correct.
     if (filter.dateFilter == DateFilter.allTime) {
-      // If there's no date filter, we're done. Return the list from the DB.
       return partiallyFilteredList;
     } else {
-      // Otherwise, we need to filter the list further.
       final now = DateTime.now();
       DateTime startDate;
+      DateTime endDate;
+
       if (filter.dateFilter == DateFilter.thisMonth) {
         startDate = DateTime(now.year, now.month, 1);
+        endDate = DateTime(now.year, now.month + 1, 1);
       } else {
         // thisYear
         startDate = DateTime(now.year, 1, 1);
+        endDate = DateTime(now.year + 1, 1, 1);
       }
 
-      // Use a .where() clause to manually filter by date
       return partiallyFilteredList.where((transaction) {
-        return !transaction.date.isBefore(startDate) &&
-            !transaction.date.isAfter(now);
+        return (transaction.date.isAtSameMomentAs(startDate) ||
+                transaction.date.isAfter(startDate)) &&
+            transaction.date.isBefore(endDate);
       }).toList();
     }
   }
@@ -111,13 +119,11 @@ class TransactionService {
     required DateTime startDate,
     required DateTime endDate,
   }) {
-    // 1. Get ALL transactions from the database.
     final allTransactions = _transactionBox.getAll();
-
-    // 2. Filter them by date MANUALLY in Dart.
     final transactionsInDateRange = allTransactions.where((txn) {
-      // Ensure the transaction date is not before the start date AND not after the end date.
-      return !txn.date.isBefore(startDate) && !txn.date.isAfter(endDate);
+      return (txn.date.isAtSameMomentAs(startDate) ||
+              txn.date.isAfter(startDate)) &&
+          txn.date.isBefore(endDate);
     }).toList();
 
     // 3. Process the filtered results (this part is the same as before).
@@ -152,7 +158,9 @@ class TransactionService {
     required DateTime endDate,
   }) {
     final transactions = _transactionBox.getAll().where((txn) {
-      return !txn.date.isBefore(startDate) && !txn.date.isAfter(endDate);
+      return (txn.date.isAtSameMomentAs(startDate) ||
+              txn.date.isAfter(startDate)) &&
+          txn.date.isBefore(endDate);
     }).toList();
 
     double income = 0;

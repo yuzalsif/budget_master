@@ -221,22 +221,65 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 // --- Helper Widgets for Cleaner Code (KPI and FilterChips are unchanged) ---
 
 class _FilterChips extends ConsumerWidget {
+  Future<void> _selectCustomDateRange(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final now = DateTime.now();
+    final pickedRange = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: now,
+    );
+
+    if (pickedRange != null) {
+      // If the user picked a range, update the provider state
+      ref.read(dashboardFilterProvider.notifier).state = DashboardFilterState(
+        filter: DashboardDateFilter.custom,
+        dateRange: pickedRange,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentFilter = ref.watch(dashboardFilterProvider);
+    // We now watch the provider to get the full DashboardFilterState object
+    final currentFilterState = ref.watch(dashboardFilterProvider);
+    final dateFormat = DateFormat.yMMMd();
+
     return SizedBox(
       height: 40,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: DashboardDateFilter.values.map((filter) {
+          final isSelected = currentFilterState.filter == filter;
+          String label;
+
+          // Create a dynamic label for the custom chip
+          if (filter == DashboardDateFilter.custom &&
+              currentFilterState.dateRange != null &&
+              isSelected) {
+            label =
+                '${dateFormat.format(currentFilterState.dateRange!.start)} - ${dateFormat.format(currentFilterState.dateRange!.end)}';
+          } else {
+            label = filter.name.replaceAll('this', 'This ');
+          }
+
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: ChoiceChip(
-              label: Text(filter.name.replaceAll('this', 'This ')),
-              selected: currentFilter == filter,
+              label: Text(label),
+              selected: isSelected,
               onSelected: (isSelected) {
                 if (isSelected) {
-                  ref.read(dashboardFilterProvider.notifier).state = filter;
+                  if (filter == DashboardDateFilter.custom) {
+                    // If "Custom" is tapped, show the date picker
+                    _selectCustomDateRange(context, ref);
+                  } else {
+                    // For other filters, update the state normally
+                    ref.read(dashboardFilterProvider.notifier).state =
+                        DashboardFilterState(filter: filter);
+                  }
                 }
               },
             ),
