@@ -1,28 +1,29 @@
-import 'package:isar/isar.dart';
+import 'package:objectbox/objectbox.dart';
 import 'package:budget_master/domain/models/account.dart';
 import 'package:budget_master/domain/models/category.dart';
 
-part 'transaction.g.dart';
-
+// Enum definition stays.
 enum TransactionType { deposit, withdrawal }
 
-@collection
+@Entity()
 class Transaction {
-  Id id = Isar.autoIncrement;
+  @Id()
+  int id = 0;
 
   late double amount;
 
-  @enumerated
-  late TransactionType type;
+  // --- THE FIX ---
+  // Store as an integer. Default is 0, which matches TransactionType.deposit.
+  int type = 0;
+  // ---------------
 
+  @Property(type: PropertyType.date)
   late DateTime date;
 
   String? description;
 
-  // IsarLink establishes a relationship between collections
-  // This is how we know which account and category this transaction belongs to.
-  final account = IsarLink<Account>();
-  final category = IsarLink<Category>();
+  final account = ToOne<Account>();
+  final category = ToOne<Category>();
 
   Transaction();
 }

@@ -9,14 +9,14 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isarAsyncValue = ref.watch(isarProvider);
+    final objectboxAsyncValue = ref.watch(objectboxProvider);
 
     return MaterialApp(
       title: 'Budget Master',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: isarAsyncValue.when(
+      home: objectboxAsyncValue.when(
         loading: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())),
         error: (err, stack) => Scaffold(

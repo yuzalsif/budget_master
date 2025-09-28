@@ -1,18 +1,21 @@
-import 'package:isar/isar.dart';
+import 'package:objectbox/objectbox.dart';
 
-part 'category.g.dart';
-
+// The enum definition stays. It's our source of truth.
 enum CategoryType { expense, income, investment, outing }
 
-@collection
+@Entity()
 class Category {
-  Id id = Isar.autoIncrement;
+  @Id()
+  int id = 0;
 
-  @Index(type: IndexType.value, unique: true)
-  late String name; 
+  @Unique()
+  late String name;
 
-  @enumerated
-  late CategoryType type;
+  // --- THE FIX ---
+  // Store the enum's index as a simple integer.
+  // No annotations needed. The default value is 0, which matches CategoryType.expense.
+  int type = 0;
+  // ---------------
 
   Category();
 }
