@@ -1,4 +1,5 @@
 import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
+import 'package:budget_master/features/categories/presentation/screens/categories_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/app/theme/app_theme.dart';
@@ -38,16 +39,30 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const AccountsScreen()),
-            );
-          },
-          child: const Text('Manage Accounts'),
-        ),
-      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const AccountsScreen()),
+              );
+            },
+            child: const Text('Manage Accounts'),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CategoriesScreen(),
+                ),
+              );
+            },
+            child: const Text('Manage Categories'),
+          ),
+        ],
+      )
     );
   }
 }
