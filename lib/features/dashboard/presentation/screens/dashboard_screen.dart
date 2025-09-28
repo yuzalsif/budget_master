@@ -16,7 +16,13 @@ class DashboardScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
+      appBar: AppBar(
+        leadingWidth: 130,
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 16.0),
+          child: Text('Jackline', style: TextStyle(fontSize: 24)),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
