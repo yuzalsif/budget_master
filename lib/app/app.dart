@@ -15,12 +15,14 @@ class MyApp extends ConsumerWidget {
       title: 'Budget Master',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
+      debugShowCheckedModeBanner: false,
       home: objectboxAsyncValue.when(
         loading: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())),
         error: (err, stack) => Scaffold(
-            body: Center(child: Text('Error initializing database: $err'))),
+          body: Center(child: Text('Error initializing database: $err')),
+        ),
         data: (isar) =>
             const HomePage(), // When DB is ready, show our home page
       ),

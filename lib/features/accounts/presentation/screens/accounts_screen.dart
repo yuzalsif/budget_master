@@ -68,7 +68,12 @@ class AccountsScreen extends ConsumerWidget {
                       ),
                     ),
                     onTap: () {
-                      // TODO: Implement navigation to an edit/details screen
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AddAccountScreen(account: account),
+                        ),
+                      );
                     },
                   ),
                 );
@@ -77,28 +82,13 @@ class AccountsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Navigate to the new screen
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const AddAccountScreen()),
-          );
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => AddAccountScreen()));
         },
         label: const Text('Add Account'),
         icon: const Icon(Icons.add),
       ),
     );
-  }
-
-  void _addDummyAccount(WidgetRef ref) {
-    // 1. Create the new account
-    final newAccount = Account()
-      ..name = 'M-PESA'
-      ..balance = 5000.0;
-
-    // 2. Use the service to add it to the database
-    ref.read(accountServiceProvider).addAccount(newAccount);
-
-    // 3. Manually refresh our UI's state by fetching the new full list
-    ref.read(accountsProvider.notifier).state = ref
-        .read(accountServiceProvider)
-        .getAllAccounts();
   }
 }

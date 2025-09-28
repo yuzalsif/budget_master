@@ -21,4 +21,15 @@ class AccountService {
   void addAccount(Account account) {
     _box.put(account);
   }
+
+    void updateAccount(Account account) {
+    // ObjectBox's put() method handles both create and update.
+    // If an object with the same ID is put, it's updated.
+    // If the ID is 0 or doesn't exist, it's created.
+    _box.put(account);
+  }
+
+  void deleteAccount(int accountId) {
+    _box.remove(accountId);
+  }
 }
