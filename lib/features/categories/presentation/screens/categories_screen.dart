@@ -1,4 +1,4 @@
-
+import 'package:budget_master/features/categories/presentation/screens/category_totals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/domain/models/category.dart';
@@ -13,7 +13,33 @@ class CategoriesScreen extends ConsumerWidget {
     final List<Category> categories = ref.watch(categoriesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Manage Categories')),
+      appBar: AppBar(
+        title: const Text('Manage Categories'),
+        actions: [
+          PopupMenuButton<int>(
+            onSelected: (value) {
+              switch (value) {
+                case 1:
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CategoryTotalsScreen(),
+                    ),
+                  );
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 1,
+                child: ListTile(
+                  leading: Icon(Icons.account_balance_wallet_outlined),
+                  title: Text('Category Totals'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: categories.isEmpty
           ? const Center(
               child: Text(
@@ -58,7 +84,8 @@ class CategoriesScreen extends ConsumerWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => AddEditCategoryScreen(category: category),
+                          builder: (context) =>
+                              AddEditCategoryScreen(category: category),
                         ),
                       );
                     },
@@ -69,7 +96,9 @@ class CategoriesScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const AddEditCategoryScreen()),
+            MaterialPageRoute(
+              builder: (context) => const AddEditCategoryScreen(),
+            ),
           );
         },
         label: const Text('Add Category'),

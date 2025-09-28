@@ -1,5 +1,6 @@
 import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
 import 'package:budget_master/features/categories/presentation/screens/categories_screen.dart';
+import 'package:budget_master/features/categories/presentation/screens/category_totals_screen.dart';
 import 'package:budget_master/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
 import 'package:budget_master/features/transactions/presentation/screens/transactions_screen.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,13 @@ class DashboardScreen extends ConsumerWidget {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => const TransactionsScreen(),
+                    ),
+                  );
+                  break;
+                case 4:
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CategoryTotalsScreen(),
                     ),
                   );
                   break;
