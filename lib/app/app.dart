@@ -1,6 +1,7 @@
 import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
 import 'package:budget_master/features/categories/presentation/screens/categories_screen.dart';
 import 'package:budget_master/features/categories/presentation/screens/category_totals_screen.dart';
+import 'package:budget_master/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/app/theme/app_theme.dart';
@@ -26,7 +27,7 @@ class MyApp extends ConsumerWidget {
           body: Center(child: Text('Error initializing database: $err')),
         ),
         data: (isar) =>
-            const HomePage(), // When DB is ready, show our home page
+            const DashboardScreen(), // When DB is ready, show our home page
       ),
     );
   }

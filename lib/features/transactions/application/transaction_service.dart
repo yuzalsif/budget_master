@@ -147,6 +147,27 @@ class TransactionService {
     return totals;
   }
 
+  ({double income, double expense}) getIncomeExpenseTotals({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    final transactions = _transactionBox.getAll().where((txn) {
+      return !txn.date.isBefore(startDate) && !txn.date.isAfter(endDate);
+    }).toList();
+
+    double income = 0;
+    double expense = 0;
+
+    for (var txn in transactions) {
+      if (TransactionType.values[txn.type] == TransactionType.deposit) {
+        income += txn.amount;
+      } else {
+        expense += txn.amount;
+      }
+    }
+    return (income: income, expense: expense);
+  }
+
   void updateTransaction(Transaction updatedTransaction) {
     // 1. Get the original state of the transaction from the DB before any changes.
     final oldTransaction = _transactionBox.get(updatedTransaction.id);
