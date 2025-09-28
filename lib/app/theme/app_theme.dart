@@ -6,7 +6,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.lightGreen,
+        seedColor: Colors.greenAccent,
         brightness: Brightness.light,
       ),
       appBarTheme: const AppBarTheme(centerTitle: true),
@@ -19,7 +19,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.lightGreen,
+        seedColor: Colors.greenAccent,
         brightness: Brightness.dark,
       ),
       appBarTheme: const AppBarTheme(centerTitle: true),

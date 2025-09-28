@@ -10,6 +10,7 @@ class DashboardData {
   final double totalExpense;
   final List<Account> accounts;
   final Map<String, double> categoryExpenseTotals;
+  final Map<String, double> categoryIncomeTotals;
 
   DashboardData({
     required this.totalBalance,
@@ -17,6 +18,7 @@ class DashboardData {
     required this.totalExpense,
     required this.accounts,
     required this.categoryExpenseTotals,
+    required this.categoryIncomeTotals,
   });
 }
 
@@ -77,6 +79,12 @@ final dashboardDataProvider = Provider<DashboardData>((ref) {
         .map((entry) => MapEntry(entry.key, entry.value.withdrawals)),
   );
 
+  final categoryIncomeTotals = Map.fromEntries(
+    categoryTotalsRaw.entries
+        .where((entry) => entry.value.deposits > 0)
+        .map((entry) => MapEntry(entry.key, entry.value.deposits)),
+  );
+
   // Assemble and return the final data object
   return DashboardData(
     totalBalance: totalBalance,
@@ -84,5 +92,6 @@ final dashboardDataProvider = Provider<DashboardData>((ref) {
     totalExpense: incomeExpense.expense,
     accounts: accounts,
     categoryExpenseTotals: categoryExpenseTotals,
+    categoryIncomeTotals: categoryIncomeTotals,
   );
 });
