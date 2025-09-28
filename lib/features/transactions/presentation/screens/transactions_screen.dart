@@ -4,6 +4,7 @@ import 'package:budget_master/features/accounts/application/account_providers.da
 import 'package:budget_master/features/categories/application/category_providers.dart';
 import 'package:budget_master/features/transactions/application/transaction_providers.dart';
 import 'package:budget_master/features/transactions/domain/transaction_filter.dart';
+import 'package:budget_master/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/domain/models/account.dart';
@@ -103,7 +104,9 @@ class TransactionsScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // TODO: Navigate to AddEditTransactionScreen
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const AddEditTransactionScreen()),
+          );
         },
         label: const Text('Add Transaction'),
         icon: const Icon(Icons.add),

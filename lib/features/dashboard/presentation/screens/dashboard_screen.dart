@@ -1,3 +1,7 @@
+import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
+import 'package:budget_master/features/categories/presentation/screens/categories_screen.dart';
+import 'package:budget_master/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
+import 'package:budget_master/features/transactions/presentation/screens/transactions_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
@@ -22,6 +26,54 @@ class DashboardScreen extends ConsumerWidget {
           padding: EdgeInsets.only(left: 16.0),
           child: Text('Jackline', style: TextStyle(fontSize: 24)),
         ),
+        actions: [
+          PopupMenuButton<int>(
+            onSelected: (value) {
+              switch (value) {
+                case 1:
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const AccountsScreen()),
+                  );
+                  break;
+                case 2:
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+                  );
+                  break;
+                case 3:
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const TransactionsScreen(),
+                    ),
+                  );
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 1,
+                child: ListTile(
+                  leading: Icon(Icons.account_balance_wallet_outlined),
+                  title: Text('Manage Accounts'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 2,
+                child: ListTile(
+                  leading: Icon(Icons.category_outlined),
+                  title: Text('Manage Categories'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 3,
+                child: ListTile(
+                  leading: Icon(Icons.list_alt_rounded),
+                  title: Text('All Transactions'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -125,7 +177,9 @@ class DashboardScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // TODO: Navigate to AddEditTransactionScreen
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const AddEditTransactionScreen()),
+          );
         },
         label: const Text('New Transaction'),
         icon: const Icon(Icons.add),
