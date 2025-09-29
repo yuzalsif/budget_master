@@ -193,7 +193,7 @@ class _FilterBar extends ConsumerWidget {
               label: Text(
                 'By ${currentFilter.dateFilter.name.replaceAll('this', 'This ')}',
               ),
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
           ),
         ],

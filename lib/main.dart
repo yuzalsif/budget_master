@@ -1,15 +1,15 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/app/app.dart';
 
-void main() {
-  // Ensure that widget binding is initialized before doing anything.
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(
-    // ProviderScope is what makes Riverpod work. It stores the state of all providers.
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  // We only need to initialize third-party packages that require it.
+  //TODO: Implement this features when ready
+  // await GoogleSignIn.instance.initialize();
+
+  // Riverpod's ProviderScope will now handle everything else for us.
+  runApp(const ProviderScope(child: MyApp()));
 }

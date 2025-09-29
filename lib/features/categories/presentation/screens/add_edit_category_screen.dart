@@ -139,7 +139,7 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
               const SizedBox(height: 24),
 
               DropdownButtonFormField<CategoryType>(
-                value: _selectedCategoryType,
+                initialValue: _selectedCategoryType,
                 decoration: const InputDecoration(
                   labelText: 'Category Type',
                   border: OutlineInputBorder(),

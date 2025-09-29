@@ -8,7 +8,6 @@ import 'package:budget_master/features/dashboard/application/dashboard_providers
 import 'package:budget_master/features/transactions/application/transaction_providers.dart';
 import 'package:budget_master/features/transactions/application/transaction_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/domain/models/account.dart';
 import 'package:intl/intl.dart';
@@ -189,7 +188,7 @@ class _AddEditTransactionScreenState
 
               // Account Dropdown
               DropdownButtonFormField<Account>(
-                value: _selectedAccount,
+                initialValue: _selectedAccount,
                 items: accounts
                     .map(
                       (acc) =>
@@ -209,7 +208,7 @@ class _AddEditTransactionScreenState
 
               // Category Dropdown
               DropdownButtonFormField<Category>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 items: categories
                     .map(
                       (cat) =>

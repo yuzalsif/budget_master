@@ -19,7 +19,12 @@ dependencies:
   intl: ^0.20.2
   fl_chart: ^1.1.1
   google_fonts: ^6.3.2
+  shared_preferences: ^2.5.3
+  google_sign_in: ^7.2.0
+  googleapis: ^15.0.0
+  path: ^1.9.1
 
+  http: any
 dev_dependencies:
   analyzer: ^8.2.0
   flutter_test:

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/domain/models/account.dart';
 import 'package:budget_master/features/accounts/application/account_providers.dart';
-import 'package:budget_master/features/accounts/application/account_service.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
@@ -84,7 +83,7 @@ class AccountsScreen extends ConsumerWidget {
           // Navigate to the new screen
           Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (context) => AddAccountScreen()));
+          ).push(MaterialPageRoute(builder: (context) => const AddAccountScreen()));
         },
         label: const Text('Add Account'),
         icon: const Icon(Icons.add),

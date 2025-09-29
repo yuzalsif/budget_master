@@ -1,5 +1,6 @@
 // lib/features/transactions/application/transaction_service.dart
 
+import 'package:budget_master/domain/models/category.dart';
 import 'package:budget_master/features/transactions/domain/transaction_filter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/core/providers/database_provider.dart';
@@ -22,15 +23,131 @@ class TransactionService {
     _accountBox = _store.box<Account>();
   }
 
-  // Get all transactions, sorted by date (newest first)
   List<Transaction> getAllTransactions() {
     final query = _transactionBox.query()
       ..order(Transaction_.date, flags: Order.descending);
     return query.build().find();
   }
 
-  /// Adds a new transaction and updates the corresponding account's balance.
-  /// This is a critical operation and must be done in a database transaction.
+  int? _transferCategoryId;
+  int? _getTransferCategoryId() {
+    if (_transferCategoryId != null) return _transferCategoryId;
+    try {
+      final transferCategory = _store
+          .box<Category>()
+          .query(Category_.name.equals('Transfer', caseSensitive: false))
+          .build()
+          .findFirst();
+      _transferCategoryId = transferCategory?.id;
+      return _transferCategoryId;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Map<String, ({double deposits, double withdrawals})> getCategoryTotals({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) {
+    final transferId = _getTransferCategoryId();
+
+    // 1. Get all transactions from the database first.
+    final allTransactions = _transactionBox.getAll();
+
+    // 2. Filter them by date AND ensure they are NOT internal transfers.
+    final transactionsInDateRange = allTransactions.where((txn) {
+      final isDateValid =
+          (txn.date.isAtSameMomentAs(startDate) ||
+              txn.date.isAfter(startDate)) &&
+          txn.date.isBefore(endDate);
+      final isNotTransfer = txn.category.targetId != transferId;
+      return isDateValid && isNotTransfer;
+    }).toList();
+
+    // 3. Process the filtered results to calculate totals.
+    final Map<String, ({double deposits, double withdrawals})> totals = {};
+    for (var txn in transactionsInDateRange) {
+      final categoryName = txn.category.target?.name ?? 'Uncategorized';
+      var currentTotals =
+          totals[categoryName] ?? (deposits: 0.0, withdrawals: 0.0);
+
+      if (TransactionType.values[txn.type] == TransactionType.deposit) {
+        currentTotals = (
+          deposits: currentTotals.deposits + txn.amount,
+          withdrawals: currentTotals.withdrawals,
+        );
+      } else {
+        currentTotals = (
+          deposits: currentTotals.deposits,
+          withdrawals: currentTotals.withdrawals + txn.amount,
+        );
+      }
+
+      totals[categoryName] = currentTotals;
+    }
+
+    return totals;
+  }
+
+  void performTransfer({
+    required Account fromAccount,
+    required Category fromCategory,
+    required Account toAccount,
+    required Category toCategory,
+    required double amount,
+    required DateTime date,
+    String? description,
+  }) {
+    // The only validation we need: source and destination cannot be identical.
+    if (fromAccount.id == toAccount.id && fromCategory.id == toCategory.id) {
+      throw Exception(
+        "Cannot transfer to the exact same account and category.",
+      );
+    }
+    if (amount <= 0) {
+      throw Exception("Transfer amount must be positive.");
+    }
+
+    // --- Create the two transactions ---
+
+    // 1. Withdrawal from the source
+    final withdrawalTxn = Transaction()
+      ..amount = amount
+      ..type = TransactionType.withdrawal.index
+      ..date = date
+      ..description =
+          description ?? 'Transfer to ${toAccount.name} (${toCategory.name})';
+    withdrawalTxn.account.target = fromAccount;
+    withdrawalTxn.category.target = fromCategory;
+
+    // 2. Deposit into the destination
+    final depositTxn = Transaction()
+      ..amount = amount
+      ..type = TransactionType.deposit.index
+      ..date = date
+      ..description =
+          description ??
+          'Transfer from ${fromAccount.name} (${fromCategory.name})';
+    depositTxn.account.target = toAccount;
+    depositTxn.category.target = toCategory;
+
+    // --- Update account balances ONLY if the accounts are different ---
+    if (fromAccount.id != toAccount.id) {
+      fromAccount.balance -= amount;
+      toAccount.balance += amount;
+    }
+    // If accounts are the same, the net balance change is zero, so we do nothing.
+
+    // --- Perform all operations in a single database transaction ---
+    _store.runInTransaction(TxMode.write, () {
+      // We only need to save the accounts if they were actually modified.
+      if (fromAccount.id != toAccount.id) {
+        _accountBox.putMany([fromAccount, toAccount]);
+      }
+      _transactionBox.putMany([withdrawalTxn, depositTxn]);
+    });
+  }
+
   void addTransaction(Transaction transaction) {
     // 1. Get the account that this transaction is linked to.
     final account = transaction.account.target;
@@ -58,8 +175,6 @@ class TransactionService {
     });
   }
 
-  // lib/features/transactions/application/transaction_service.dart
-
   List<Transaction> getFilteredTransactions(TransactionFilter filter) {
     // Start with a base query builder, ordered by date
     final queryBuilder = _transactionBox.query()
@@ -81,16 +196,10 @@ class TransactionService {
       );
     }
 
-    // --- THIS IS THE CORRECTION ---
-    // 1. Build the Query object from the builder.
     final query = queryBuilder.build();
-    // 2. Execute find() on the Query object.
     final partiallyFilteredList = query.find();
-    // 3. Close the Query object to release resources.
     query.close();
-    // ----------------------------
 
-    // The rest of the method is the same and is correct.
     if (filter.dateFilter == DateFilter.allTime) {
       return partiallyFilteredList;
     } else {
@@ -102,7 +211,6 @@ class TransactionService {
         startDate = DateTime(now.year, now.month, 1);
         endDate = DateTime(now.year, now.month + 1, 1);
       } else {
-        // thisYear
         startDate = DateTime(now.year, 1, 1);
         endDate = DateTime(now.year + 1, 1, 1);
       }
@@ -115,52 +223,59 @@ class TransactionService {
     }
   }
 
-  Map<String, ({double deposits, double withdrawals})> getCategoryTotals({
-    required DateTime startDate,
-    required DateTime endDate,
-  }) {
-    final allTransactions = _transactionBox.getAll();
-    final transactionsInDateRange = allTransactions.where((txn) {
-      return (txn.date.isAtSameMomentAs(startDate) ||
-              txn.date.isAfter(startDate)) &&
-          txn.date.isBefore(endDate);
-    }).toList();
+  // Map<String, ({double deposits, double withdrawals})> getCategoryTotals({
+  //   required DateTime startDate,
+  //   required DateTime endDate,
+  // }) {
+  //   final allTransactions = _transactionBox.getAll();
+  //   final transactionsInDateRange = allTransactions.where((txn) {
+  //     return (txn.date.isAtSameMomentAs(startDate) ||
+  //             txn.date.isAfter(startDate)) &&
+  //         txn.date.isBefore(endDate);
+  //   }).toList();
 
-    // 3. Process the filtered results (this part is the same as before).
-    final Map<String, ({double deposits, double withdrawals})> totals = {};
+  //   // 3. Process the filtered results (this part is the same as before).
+  //   final Map<String, ({double deposits, double withdrawals})> totals = {};
 
-    for (var txn in transactionsInDateRange) {
-      final categoryName = txn.category.target?.name ?? 'Uncategorized';
+  //   for (var txn in transactionsInDateRange) {
+  //     final categoryName = txn.category.target?.name ?? 'Uncategorized';
 
-      var currentTotals =
-          totals[categoryName] ?? (deposits: 0.0, withdrawals: 0.0);
+  //     var currentTotals =
+  //         totals[categoryName] ?? (deposits: 0.0, withdrawals: 0.0);
 
-      if (TransactionType.values[txn.type] == TransactionType.deposit) {
-        currentTotals = (
-          deposits: currentTotals.deposits + txn.amount,
-          withdrawals: currentTotals.withdrawals,
-        );
-      } else {
-        currentTotals = (
-          deposits: currentTotals.deposits,
-          withdrawals: currentTotals.withdrawals + txn.amount,
-        );
-      }
+  //     if (TransactionType.values[txn.type] == TransactionType.deposit) {
+  //       currentTotals = (
+  //         deposits: currentTotals.deposits + txn.amount,
+  //         withdrawals: currentTotals.withdrawals,
+  //       );
+  //     } else {
+  //       currentTotals = (
+  //         deposits: currentTotals.deposits,
+  //         withdrawals: currentTotals.withdrawals + txn.amount,
+  //       );
+  //     }
 
-      totals[categoryName] = currentTotals;
-    }
+  //     totals[categoryName] = currentTotals;
+  //   }
 
-    return totals;
-  }
+  //   return totals;
+  // }
+
 
   ({double income, double expense}) getIncomeExpenseTotals({
     required DateTime startDate,
     required DateTime endDate,
   }) {
+    final transferId = _getTransferCategoryId();
+
+    // Get all transactions and filter them in one go.
     final transactions = _transactionBox.getAll().where((txn) {
-      return (txn.date.isAtSameMomentAs(startDate) ||
+      final isDateValid =
+          (txn.date.isAtSameMomentAs(startDate) ||
               txn.date.isAfter(startDate)) &&
           txn.date.isBefore(endDate);
+      final isNotTransfer = txn.category.targetId != transferId;
+      return isDateValid && isNotTransfer;
     }).toList();
 
     double income = 0;
@@ -176,53 +291,61 @@ class TransactionService {
     return (income: income, expense: expense);
   }
 
+  // ({double income, double expense}) getIncomeExpenseTotals({
+  //   required DateTime startDate,
+  //   required DateTime endDate,
+  // }) {
+  //   final transactions = _transactionBox.getAll().where((txn) {
+  //     return (txn.date.isAtSameMomentAs(startDate) ||
+  //             txn.date.isAfter(startDate)) &&
+  //         txn.date.isBefore(endDate);
+  //   }).toList();
+
+  //   double income = 0;
+  //   double expense = 0;
+
+  //   for (var txn in transactions) {
+  //     if (TransactionType.values[txn.type] == TransactionType.deposit) {
+  //       income += txn.amount;
+  //     } else {
+  //       expense += txn.amount;
+  //     }
+  //   }
+  //   return (income: income, expense: expense);
+  // }
+
   void updateTransaction(Transaction updatedTransaction) {
-    // 1. Get the original state of the transaction from the DB before any changes.
     final oldTransaction = _transactionBox.get(updatedTransaction.id);
     if (oldTransaction == null) {
       throw Exception('Original transaction not found for update.');
     }
 
-    // 2. Get the account that was originally associated with this transaction.
     final oldAccount = oldTransaction.account.target;
 
-    // 3. Get the account that is now associated with this transaction (it might have changed).
     final newAccount = updatedTransaction.account.target;
     if (newAccount == null) {
       throw Exception('Updated transaction must have a valid account.');
     }
 
     _store.runInTransaction(TxMode.write, () {
-      // --- REVERT THE OLD TRANSACTION ---
       if (oldAccount != null) {
         if (TransactionType.values[oldTransaction.type] ==
             TransactionType.withdrawal) {
-          oldAccount.balance +=
-              oldTransaction.amount; // Add back the withdrawn amount
+          oldAccount.balance += oldTransaction.amount;
         } else {
-          // Deposit
-          oldAccount.balance -=
-              oldTransaction.amount; // Subtract the deposited amount
+          oldAccount.balance -= oldTransaction.amount;
         }
-        // Save the reverted state of the old account.
-        // If the old and new account are the same, this will be overwritten in the next step, which is fine.
         _accountBox.put(oldAccount);
       }
 
-      // --- APPLY THE NEW TRANSACTION ---
       if (TransactionType.values[updatedTransaction.type] ==
           TransactionType.withdrawal) {
-        newAccount.balance -=
-            updatedTransaction.amount; // Subtract the new amount
+        newAccount.balance -= updatedTransaction.amount;
       } else {
-        // Deposit
-        newAccount.balance += updatedTransaction.amount; // Add the new amount
+        newAccount.balance += updatedTransaction.amount;
       }
-      // Save the final state of the new account.
       _accountBox.put(newAccount);
 
-      // --- FINALLY, UPDATE THE TRANSACTION RECORD ITSELF ---
-      // This will save all the new details (amount, date, account link, etc.)
       _transactionBox.put(updatedTransaction);
     });
   }

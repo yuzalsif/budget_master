@@ -1,5 +1,7 @@
 // lib/features/dashboard/presentation/screens/dashboard_screen.dart
 
+import 'package:budget_master/features/settings/presentation/screens/settings_screen.dart';
+import 'package:budget_master/features/transactions/presentation/screens/money_transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
@@ -65,6 +67,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     ),
                   );
                   break;
+                case 4:
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const MoneyTransferScreen(),
+                    ),
+                  );
+                  break;
+                case 5:
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                  );
+                  break;
               }
             },
             itemBuilder: (context) => [
@@ -87,6 +101,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 child: ListTile(
                   leading: Icon(Icons.list_alt_rounded),
                   title: Text('All Transactions'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 4,
+                child: ListTile(
+                  leading: Icon(Icons.money_outlined),
+                  title: Text('Money Transfer'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 5,
+                child: ListTile(
+                  leading: Icon(Icons.settings_outlined),
+                  title: Text('Settings'),
                 ),
               ),
             ],

@@ -9,7 +9,7 @@ import 'package:budget_master/features/accounts/application/account_service.dart
 
 class AddAccountScreen extends ConsumerStatefulWidget {
   final Account? account;
-  AddAccountScreen({super.key, this.account});
+  const AddAccountScreen({super.key, this.account});
 
   @override
   ConsumerState<AddAccountScreen> createState() => _AddAccountScreenState();
