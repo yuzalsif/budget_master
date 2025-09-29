@@ -16,6 +16,7 @@ import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
 import 'domain/models/account.dart';
 import 'domain/models/category.dart';
+import 'domain/models/contact.dart';
 import 'domain/models/transaction.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
@@ -82,7 +83,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(3, 8624051679214522126),
     name: 'Transaction',
-    lastPropertyId: const obx_int.IdUid(7, 6929079245015721089),
+    lastPropertyId: const obx_int.IdUid(8, 3119011134247525984),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -131,6 +132,37 @@ final _entities = <obx_int.ModelEntity>[
         indexId: const obx_int.IdUid(4, 3571059290750212950),
         relationTarget: 'Category',
       ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(8, 3119011134247525984),
+        name: 'contactId',
+        type: 11,
+        flags: 520,
+        indexId: const obx_int.IdUid(6, 3757871041118194298),
+        relationTarget: 'Contact',
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(4, 671643335111572529),
+    name: 'Contact',
+    lastPropertyId: const obx_int.IdUid(2, 6786185846759111794),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 2905249455389504264),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 6786185846759111794),
+        name: 'name',
+        type: 9,
+        flags: 2080,
+        indexId: const obx_int.IdUid(5, 9179922224798327167),
+      ),
     ],
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
@@ -175,8 +207,8 @@ Future<obx.Store> openStore({
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(3, 8624051679214522126),
-    lastIndexId: const obx_int.IdUid(4, 3571059290750212950),
+    lastEntityId: const obx_int.IdUid(4, 671643335111572529),
+    lastIndexId: const obx_int.IdUid(6, 3757871041118194298),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [],
@@ -258,7 +290,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
     ),
     Transaction: obx_int.EntityDefinition<Transaction>(
       model: _entities[2],
-      toOneRelations: (Transaction object) => [object.account, object.category],
+      toOneRelations: (Transaction object) => [
+        object.account,
+        object.category,
+        object.contact,
+      ],
       toManyRelations: (Transaction object) => {},
       getId: (Transaction object) => object.id,
       setId: (Transaction object, int id) {
@@ -268,7 +304,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final descriptionOffset = object.description == null
             ? null
             : fbb.writeString(object.description!);
-        fbb.startTable(8);
+        fbb.startTable(9);
         fbb.addInt64(0, object.id);
         fbb.addFloat64(1, object.amount);
         fbb.addInt64(2, object.type);
@@ -276,6 +312,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         fbb.addOffset(4, descriptionOffset);
         fbb.addInt64(5, object.account.targetId);
         fbb.addInt64(6, object.category.targetId);
+        fbb.addInt64(7, object.contact.targetId);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -312,6 +349,42 @@ obx_int.ModelDefinition getObjectBoxModel() {
           0,
         );
         object.category.attach(store);
+        object.contact.targetId = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          18,
+          0,
+        );
+        object.contact.attach(store);
+        return object;
+      },
+    ),
+    Contact: obx_int.EntityDefinition<Contact>(
+      model: _entities[3],
+      toOneRelations: (Contact object) => [],
+      toManyRelations: (Contact object) => {},
+      getId: (Contact object) => object.id,
+      setId: (Contact object, int id) {
+        object.id = id;
+      },
+      objectToFB: (Contact object, fb.Builder fbb) {
+        final nameOffset = fbb.writeString(object.name);
+        fbb.startTable(3);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, nameOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+
+        final object = Contact()
+          ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0)
+          ..name = const fb.StringReader(
+            asciiOptimization: true,
+          ).vTableGet(buffer, rootOffset, 6, '');
+
         return object;
       },
     ),
@@ -391,5 +464,23 @@ class Transaction_ {
   /// See [Transaction.category].
   static final category = obx.QueryRelationToOne<Transaction, Category>(
     _entities[2].properties[6],
+  );
+
+  /// See [Transaction.contact].
+  static final contact = obx.QueryRelationToOne<Transaction, Contact>(
+    _entities[2].properties[7],
+  );
+}
+
+/// [Contact] entity fields to define ObjectBox queries.
+class Contact_ {
+  /// See [Contact.id].
+  static final id = obx.QueryIntegerProperty<Contact>(
+    _entities[3].properties[0],
+  );
+
+  /// See [Contact.name].
+  static final name = obx.QueryStringProperty<Contact>(
+    _entities[3].properties[1],
   );
 }

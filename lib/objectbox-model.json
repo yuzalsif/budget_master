@@ -57,7 +57,7 @@
     },
     {
       "id": "3:8624051679214522126",
-      "lastPropertyId": "7:6929079245015721089",
+      "lastPropertyId": "8:3119011134247525984",
       "name": "Transaction",
       "properties": [
         {
@@ -101,13 +101,42 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "Category"
+        },
+        {
+          "id": "8:3119011134247525984",
+          "name": "contactId",
+          "indexId": "6:3757871041118194298",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Contact"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:671643335111572529",
+      "lastPropertyId": "2:6786185846759111794",
+      "name": "Contact",
+      "properties": [
+        {
+          "id": "1:2905249455389504264",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6786185846759111794",
+          "name": "name",
+          "indexId": "5:9179922224798327167",
+          "type": 9,
+          "flags": 2080
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "3:8624051679214522126",
-  "lastIndexId": "4:3571059290750212950",
+  "lastEntityId": "4:671643335111572529",
+  "lastIndexId": "6:3757871041118194298",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
