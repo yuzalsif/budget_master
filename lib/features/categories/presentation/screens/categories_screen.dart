@@ -1,3 +1,4 @@
+import 'package:budget_master/features/categories/presentation/screens/category_detail_screen.dart';
 import 'package:budget_master/features/categories/presentation/screens/category_totals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,7 +86,7 @@ class CategoriesScreen extends ConsumerWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
-                              AddEditCategoryScreen(category: category),
+                              CategoryDetailScreen(category: category),
                         ),
                       );
                     },

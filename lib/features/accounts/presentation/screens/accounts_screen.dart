@@ -1,3 +1,4 @@
+import 'package:budget_master/features/accounts/presentation/screens/account_detail_screen.dart';
 import 'package:budget_master/features/accounts/presentation/screens/add_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,9 +71,10 @@ class AccountsScreen extends ConsumerWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
-                              AddAccountScreen(account: account),
+                              AccountDetailScreen(account: account),
                         ),
                       );
+                      ;
                     },
                   ),
                 );
@@ -81,9 +83,9 @@ class AccountsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Navigate to the new screen
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => const AddAccountScreen()));
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const AddAccountScreen()),
+          );
         },
         label: const Text('Add Account'),
         icon: const Icon(Icons.add),

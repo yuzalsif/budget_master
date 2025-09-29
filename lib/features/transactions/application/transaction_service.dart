@@ -45,6 +45,73 @@ class TransactionService {
     }
   }
 
+  Map<String, ({double deposits, double withdrawals})>
+  getCategoryTotalsForAccount(int accountId) {
+    // 1. Build a query to get ALL transactions linked to this specific account.
+    final query = _transactionBox
+        .query(Transaction_.account.equals(accountId))
+        .build();
+    final transactions = query.find();
+    query.close();
+
+    final Map<String, ({double deposits, double withdrawals})> totals = {};
+    for (var txn in transactions) {
+      final categoryName = txn.category.target?.name ?? 'Uncategorized';
+      var currentTotals =
+          totals[categoryName] ?? (deposits: 0.0, withdrawals: 0.0);
+
+      if (TransactionType.values[txn.type] == TransactionType.deposit) {
+        currentTotals = (
+          deposits: currentTotals.deposits + txn.amount,
+          withdrawals: currentTotals.withdrawals,
+        );
+      } else {
+        currentTotals = (
+          deposits: currentTotals.deposits,
+          withdrawals: currentTotals.withdrawals + txn.amount,
+        );
+      }
+
+      totals[categoryName] = currentTotals;
+    }
+
+    return totals;
+  }
+
+  Map<String, ({double deposits, double withdrawals})>
+  getAccountTotalsForCategory(int categoryId) {
+    // 1. Build a query to get ALL transactions linked to this specific category.
+    final query = _transactionBox
+        .query(Transaction_.category.equals(categoryId))
+        .build();
+    final transactions = query.find();
+    query.close();
+
+    // 2. Process the results to group by account.
+    final Map<String, ({double deposits, double withdrawals})> totals = {};
+    for (var txn in transactions) {
+      final accountName = txn.account.target?.name ?? 'Unknown Account';
+      var currentTotals =
+          totals[accountName] ?? (deposits: 0.0, withdrawals: 0.0);
+
+      if (TransactionType.values[txn.type] == TransactionType.deposit) {
+        currentTotals = (
+          deposits: currentTotals.deposits + txn.amount,
+          withdrawals: currentTotals.withdrawals,
+        );
+      } else {
+        currentTotals = (
+          deposits: currentTotals.deposits,
+          withdrawals: currentTotals.withdrawals + txn.amount,
+        );
+      }
+
+      totals[accountName] = currentTotals;
+    }
+
+    return totals;
+  }
+
   Map<String, ({double deposits, double withdrawals})> getCategoryTotals({
     required DateTime startDate,
     required DateTime endDate,
@@ -260,7 +327,6 @@ class TransactionService {
 
   //   return totals;
   // }
-
 
   ({double income, double expense}) getIncomeExpenseTotals({
     required DateTime startDate,
