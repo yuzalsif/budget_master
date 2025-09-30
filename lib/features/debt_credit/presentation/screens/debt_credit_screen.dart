@@ -1,5 +1,5 @@
-import 'package:budget_master/features/contacts/presentation/screens/add_edit_contact_screen.dart';
-import 'package:budget_master/features/debt_credit/application/debt_credit_service.dart';
+import 'package:jbm/features/contacts/presentation/screens/add_edit_contact_screen.dart';
+import 'package:jbm/features/debt_credit/application/debt_credit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';

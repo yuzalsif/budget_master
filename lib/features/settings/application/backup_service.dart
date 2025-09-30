@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:path/path.dart' as p;
-import 'package:budget_master/core/providers/database_provider.dart';
-import 'package:budget_master/objectbox.g.dart';
+import 'package:jbm/core/providers/database_provider.dart';
+import 'package:jbm/objectbox.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -39,7 +39,7 @@ final lastBackupProvider = StateProvider<String>((ref) {
 final backupInProgressProvider = StateProvider<bool>((ref) => false);
 
 class BackupService {
-  static const _backupFileName = 'budget_master_backup.db';
+  static const _backupFileName = 'jbm_backup.db';
   late SharedPreferences _prefs;
   final Store _store;
 

@@ -1,8 +1,8 @@
 // lib/features/debt_credit/application/debt_credit_service.dart
-import 'package:budget_master/core/providers/database_provider.dart';
-import 'package:budget_master/domain/models/contact.dart';
-import 'package:budget_master/domain/models/transaction.dart';
-import 'package:budget_master/objectbox.g.dart';
+import 'package:jbm/core/providers/database_provider.dart';
+import 'package:jbm/domain/models/contact.dart';
+import 'package:jbm/domain/models/transaction.dart';
+import 'package:jbm/objectbox.g.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final debtCreditServiceProvider = Provider<DebtCreditService>((ref) {

@@ -1,12 +1,12 @@
 // lib/features/transactions/application/transaction_service.dart
 
-import 'package:budget_master/domain/models/category.dart';
-import 'package:budget_master/features/transactions/domain/transaction_filter.dart';
+import 'package:jbm/domain/models/category.dart';
+import 'package:jbm/features/transactions/domain/transaction_filter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budget_master/core/providers/database_provider.dart';
-import 'package:budget_master/domain/models/account.dart';
-import 'package:budget_master/domain/models/transaction.dart';
-import 'package:budget_master/objectbox.g.dart';
+import 'package:jbm/core/providers/database_provider.dart';
+import 'package:jbm/domain/models/account.dart';
+import 'package:jbm/domain/models/transaction.dart';
+import 'package:jbm/objectbox.g.dart';
 
 final transactionServiceProvider = Provider<TransactionService>((ref) {
   final store = ref.watch(objectboxProvider).value!;

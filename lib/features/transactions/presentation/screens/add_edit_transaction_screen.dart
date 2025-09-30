@@ -1,19 +1,19 @@
-import 'package:budget_master/features/contacts/application/contact_providers.dart';
+import 'package:jbm/features/contacts/application/contact_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import 'package:budget_master/domain/models/account.dart';
-import 'package:budget_master/domain/models/category.dart';
-import 'package:budget_master/domain/models/transaction.dart';
-import 'package:budget_master/domain/models/contact.dart';
+import 'package:jbm/domain/models/account.dart';
+import 'package:jbm/domain/models/category.dart';
+import 'package:jbm/domain/models/transaction.dart';
+import 'package:jbm/domain/models/contact.dart';
 
-import 'package:budget_master/features/accounts/application/account_providers.dart';
-import 'package:budget_master/features/categories/application/category_providers.dart';
-import 'package:budget_master/features/transactions/application/transaction_providers.dart';
-import 'package:budget_master/features/transactions/application/transaction_service.dart';
-import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
-import 'package:budget_master/features/debt_credit/application/debt_credit_service.dart';
+import 'package:jbm/features/accounts/application/account_providers.dart';
+import 'package:jbm/features/categories/application/category_providers.dart';
+import 'package:jbm/features/transactions/application/transaction_providers.dart';
+import 'package:jbm/features/transactions/application/transaction_service.dart';
+import 'package:jbm/features/dashboard/application/dashboard_providers.dart';
+import 'package:jbm/features/debt_credit/application/debt_credit_service.dart';
 
 class AddEditTransactionScreen extends ConsumerStatefulWidget {
   final Transaction? transaction;
@@ -136,9 +136,7 @@ class _AddEditTransactionScreenState
   Widget build(BuildContext context) {
     final accounts = ref.watch(accountsProvider);
     final categories = ref.watch(categoriesProvider);
-    final contacts = ref.watch(
-      contactsProvider,
-    ); 
+    final contacts = ref.watch(contactsProvider);
 
     if (!isEditMode) {
       _selectedAccount ??= accounts.isNotEmpty ? accounts.first : null;

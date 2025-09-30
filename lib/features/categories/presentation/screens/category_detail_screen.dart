@@ -1,6 +1,6 @@
-import 'package:budget_master/domain/models/category.dart';
-import 'package:budget_master/features/categories/application/category_detail_providers.dart';
-import 'package:budget_master/features/categories/presentation/screens/add_edit_category_screen.dart';
+import 'package:jbm/domain/models/category.dart';
+import 'package:jbm/features/categories/application/category_detail_providers.dart';
+import 'package:jbm/features/categories/presentation/screens/add_edit_category_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';

@@ -1,15 +1,15 @@
 // lib/features/transactions/presentation/screens/transactions_screen.dart
 
-import 'package:budget_master/features/accounts/application/account_providers.dart';
-import 'package:budget_master/features/categories/application/category_providers.dart';
-import 'package:budget_master/features/transactions/application/transaction_providers.dart';
-import 'package:budget_master/features/transactions/domain/transaction_filter.dart';
-import 'package:budget_master/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
+import 'package:jbm/features/accounts/application/account_providers.dart';
+import 'package:jbm/features/categories/application/category_providers.dart';
+import 'package:jbm/features/transactions/application/transaction_providers.dart';
+import 'package:jbm/features/transactions/domain/transaction_filter.dart';
+import 'package:jbm/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budget_master/domain/models/account.dart';
-import 'package:budget_master/domain/models/category.dart';
-import 'package:budget_master/domain/models/transaction.dart';
+import 'package:jbm/domain/models/account.dart';
+import 'package:jbm/domain/models/category.dart';
+import 'package:jbm/domain/models/transaction.dart';
 
 import 'package:intl/intl.dart';
 
@@ -193,7 +193,9 @@ class _FilterBar extends ConsumerWidget {
               label: Text(
                 'By ${currentFilter.dateFilter.name.replaceAll('this', 'This ')}',
               ),
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest,
             ),
           ),
         ],

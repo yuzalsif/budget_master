@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:budget_master/domain/models/account.dart';
-import 'package:budget_master/features/accounts/application/account_providers.dart';
-import 'package:budget_master/features/transactions/application/transaction_service.dart';
-import 'package:budget_master/features/debt_credit/application/debt_credit_service.dart';
+import 'package:jbm/domain/models/account.dart';
+import 'package:jbm/features/accounts/application/account_providers.dart';
+import 'package:jbm/features/transactions/application/transaction_service.dart';
+import 'package:jbm/features/debt_credit/application/debt_credit_service.dart';
 
 class DashboardData {
   final double totalBalance;

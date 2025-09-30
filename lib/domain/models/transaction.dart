@@ -1,7 +1,7 @@
-import 'package:budget_master/domain/models/contact.dart';
+import 'package:jbm/domain/models/contact.dart';
 import 'package:objectbox/objectbox.dart';
-import 'package:budget_master/domain/models/account.dart';
-import 'package:budget_master/domain/models/category.dart';
+import 'package:jbm/domain/models/account.dart';
+import 'package:jbm/domain/models/category.dart';
 
 // Enum definition stays.
 enum TransactionType { deposit, withdrawal }
@@ -23,7 +23,7 @@ class Transaction {
 
   String? description;
 
-   final contact = ToOne<Contact>();
+  final contact = ToOne<Contact>();
 
   final account = ToOne<Account>();
   final category = ToOne<Category>();

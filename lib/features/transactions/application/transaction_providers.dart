@@ -1,9 +1,9 @@
 // lib/features/transactions/application/transaction_providers.dart
 
-import 'package:budget_master/features/transactions/domain/transaction_filter.dart';
+import 'package:jbm/features/transactions/domain/transaction_filter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budget_master/domain/models/transaction.dart';
-import 'package:budget_master/features/transactions/application/transaction_service.dart';
+import 'package:jbm/domain/models/transaction.dart';
+import 'package:jbm/features/transactions/application/transaction_service.dart';
 
 final transactionsProvider = StateProvider<List<Transaction>>((ref) {
   return ref.read(transactionServiceProvider).getAllTransactions();

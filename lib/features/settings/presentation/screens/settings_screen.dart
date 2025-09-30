@@ -1,8 +1,8 @@
 // lib/features/settings/presentation/screens/settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budget_master/features/settings/application/backup_service.dart';
-import 'package:budget_master/features/settings/application/theme_service.dart';
+import 'package:jbm/features/settings/application/backup_service.dart';
+import 'package:jbm/features/settings/application/theme_service.dart';
 import 'package:intl/intl.dart';
 
 class SettingsScreen extends ConsumerWidget {

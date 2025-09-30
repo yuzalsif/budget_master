@@ -1,16 +1,16 @@
 // lib/features/dashboard/presentation/screens/dashboard_screen.dart
 
-import 'package:budget_master/features/debt_credit/presentation/screens/debt_credit_screen.dart';
-import 'package:budget_master/features/settings/presentation/screens/settings_screen.dart';
-import 'package:budget_master/features/transactions/presentation/screens/money_transfer_screen.dart';
+import 'package:jbm/features/debt_credit/presentation/screens/debt_credit_screen.dart';
+import 'package:jbm/features/settings/presentation/screens/settings_screen.dart';
+import 'package:jbm/features/transactions/presentation/screens/money_transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
-import 'package:budget_master/features/categories/presentation/screens/categories_screen.dart';
-import 'package:budget_master/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
-import 'package:budget_master/features/transactions/presentation/screens/transactions_screen.dart';
-import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
+import 'package:jbm/features/accounts/presentation/screens/accounts_screen.dart';
+import 'package:jbm/features/categories/presentation/screens/categories_screen.dart';
+import 'package:jbm/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
+import 'package:jbm/features/transactions/presentation/screens/transactions_screen.dart';
+import 'package:jbm/features/dashboard/application/dashboard_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -73,7 +73,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Jackline'),
+        leadingWidth: 100,
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: Text('JBM', style: TextStyle(fontSize: 24)),
+        ),
         actions: [
           PopupMenuButton<int>(
             onSelected: (value) {

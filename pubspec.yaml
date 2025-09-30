@@ -1,4 +1,4 @@
-name: budget_master # Or your actual app name
+name: jbm # Or your actual app name
 description: "A new Flutter project."
 publish_to: 'none' 
 version: 1.0.0+1

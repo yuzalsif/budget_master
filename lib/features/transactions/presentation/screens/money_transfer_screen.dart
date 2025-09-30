@@ -1,11 +1,11 @@
 // lib/features/transactions/presentation/screens/money_transfer_screen.dart
 
-import 'package:budget_master/domain/models/account.dart';
-import 'package:budget_master/domain/models/category.dart';
-import 'package:budget_master/features/accounts/application/account_providers.dart';
-import 'package:budget_master/features/categories/application/category_providers.dart';
-import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
-import 'package:budget_master/features/transactions/application/transaction_service.dart';
+import 'package:jbm/domain/models/account.dart';
+import 'package:jbm/domain/models/category.dart';
+import 'package:jbm/features/accounts/application/account_providers.dart';
+import 'package:jbm/features/categories/application/category_providers.dart';
+import 'package:jbm/features/dashboard/application/dashboard_providers.dart';
+import 'package:jbm/features/transactions/application/transaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

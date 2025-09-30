@@ -1,7 +1,7 @@
 // lib/features/contacts/presentation/screens/contacts_screen.dart
 
-import 'package:budget_master/features/contacts/application/contact_providers.dart';
-import 'package:budget_master/features/contacts/presentation/screens/add_edit_contact_screen.dart';
+import 'package:jbm/features/contacts/application/contact_providers.dart';
+import 'package:jbm/features/contacts/presentation/screens/add_edit_contact_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,9 +13,7 @@ class ContactsScreen extends ConsumerWidget {
     final contacts = ref.watch(contactsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Contacts'),
-      ),
+      appBar: AppBar(title: const Text('Manage Contacts')),
       body: ListView.builder(
         itemCount: contacts.length,
         itemBuilder: (context, index) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budget_master/features/transactions/application/transaction_providers.dart';
+import 'package:jbm/features/transactions/application/transaction_providers.dart';
 import 'package:intl/intl.dart';
 
 class CategoryTotalsScreen extends ConsumerWidget {

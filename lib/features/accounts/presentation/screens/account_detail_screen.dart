@@ -1,6 +1,6 @@
-import 'package:budget_master/domain/models/account.dart';
-import 'package:budget_master/features/accounts/application/account_detail_providers.dart';
-import 'package:budget_master/features/accounts/presentation/screens/add_account_screen.dart';
+import 'package:jbm/domain/models/account.dart';
+import 'package:jbm/features/accounts/application/account_detail_providers.dart';
+import 'package:jbm/features/accounts/presentation/screens/add_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';

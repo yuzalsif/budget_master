@@ -1,9 +1,8 @@
-import 'package:budget_master/domain/models/contact.dart';
-import 'package:budget_master/features/contacts/application/contact_providers.dart';
-import 'package:budget_master/features/contacts/application/contact_service.dart';
+import 'package:jbm/domain/models/contact.dart';
+import 'package:jbm/features/contacts/application/contact_providers.dart';
+import 'package:jbm/features/contacts/application/contact_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 
 class AddEditContactScreen extends ConsumerStatefulWidget {
   final Contact? contact;

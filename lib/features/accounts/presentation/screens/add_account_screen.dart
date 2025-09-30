@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budget_master/domain/models/account.dart';
-import 'package:budget_master/features/accounts/application/account_providers.dart';
-import 'package:budget_master/features/accounts/application/account_service.dart';
+import 'package:jbm/domain/models/account.dart';
+import 'package:jbm/features/accounts/application/account_providers.dart';
+import 'package:jbm/features/accounts/application/account_service.dart';
 
 class AddAccountScreen extends ConsumerStatefulWidget {
   final Account? account;

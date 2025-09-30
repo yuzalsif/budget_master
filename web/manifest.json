@@ -1,6 +1,6 @@
 {
-    "name": "budget_master",
-    "short_name": "budget_master",
+    "name": "jbm",
+    "short_name": "jbm",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

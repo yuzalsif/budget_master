@@ -1,4 +1,4 @@
-package com.example.budget_master
+package com.example.jbm
 
 import io.flutter.embedding.android.FlutterActivity
 
