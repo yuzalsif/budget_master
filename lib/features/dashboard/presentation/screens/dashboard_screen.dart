@@ -1,5 +1,3 @@
-// lib/features/dashboard/presentation/screens/dashboard_screen.dart
-
 import 'package:jbm/features/debt_credit/presentation/screens/debt_credit_screen.dart';
 import 'package:jbm/features/settings/presentation/screens/settings_screen.dart';
 import 'package:jbm/features/transactions/presentation/screens/money_transfer_screen.dart';
