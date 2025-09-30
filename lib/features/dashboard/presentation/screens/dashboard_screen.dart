@@ -4,6 +4,7 @@ import 'package:budget_master/features/debt_credit/presentation/screens/debt_cre
 import 'package:budget_master/features/settings/presentation/screens/settings_screen.dart';
 import 'package:budget_master/features/transactions/presentation/screens/money_transfer_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
 import 'package:budget_master/features/categories/presentation/screens/categories_screen.dart';
@@ -24,16 +25,42 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
+  late final ScrollController _scrollController;
+  bool _isFabVisible = true;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      if (_isFabVisible) {
+        setState(() {
+          _isFabVisible = false;
+        });
+      }
+    } else if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      if (!_isFabVisible) {
+        setState(() {
+          _isFabVisible = true;
+        });
+      }
+    }
   }
 
   @override
@@ -135,6 +162,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         ],
       ),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -215,7 +243,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               ),
               const SizedBox(height: 24),
 
-              // --- Account Balances Table ---
               Text(
                 'Account Balances',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -239,21 +266,68 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               ),
               const SizedBox(height: 24),
               Text(
-                'Note: Debtor/Creditor totals will be shown here in a future update.',
-                style: Theme.of(context).textTheme.bodySmall,
+                'Debts & Credits',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const DebtCreditScreen(),
+                        ),
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      child: _KpiCard(
+                        title: 'You Are Owed',
+                        value: currencyFormat.format(
+                          dashboardData.totalDebtors,
+                        ),
+                        color: Colors.green.shade700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const DebtCreditScreen(),
+                        ),
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      child: _KpiCard(
+                        title: 'You Owe',
+                        value: currencyFormat.format(
+                          dashboardData.totalCreditors,
+                        ),
+                        color: Colors.red.shade700,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const AddEditTransactionScreen()),
-          );
-        },
-        label: const Text('New Transaction'),
-        icon: const Icon(Icons.add),
+      floatingActionButton: AnimatedSlide(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        offset: _isFabVisible ? Offset.zero : const Offset(0, 2),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AddEditTransactionScreen(),
+              ),
+            );
+          },
+          label: const Text('New Transaction'),
+          icon: const Icon(Icons.add),
+        ),
       ),
     );
   }

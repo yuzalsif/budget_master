@@ -1,3 +1,4 @@
+import 'package:budget_master/features/contacts/presentation/screens/add_edit_contact_screen.dart';
 import 'package:budget_master/features/debt_credit/application/debt_credit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +23,20 @@ class DebtCreditScreen extends ConsumerWidget {
     final totalIOwe = creditors.fold(0.0, (sum, e) => sum + e.value.abs());
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Debts & Credits')),
+      appBar: AppBar(
+        title: const Text('Debts & Credits'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add_alt_1_outlined),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AddEditContactScreen()),
+              );
+            },
+            tooltip: 'Add New Contact',
+          ),
+        ],
+      ),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
