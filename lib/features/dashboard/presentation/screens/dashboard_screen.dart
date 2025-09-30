@@ -1,5 +1,6 @@
 // lib/features/dashboard/presentation/screens/dashboard_screen.dart
 
+import 'package:budget_master/features/debt_credit/presentation/screens/debt_credit_screen.dart';
 import 'package:budget_master/features/settings/presentation/screens/settings_screen.dart';
 import 'package:budget_master/features/transactions/presentation/screens/money_transfer_screen.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +77,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   break;
                 case 5:
                   Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const DebtCreditScreen()),
+                  );
+                  break;
+                case 6:
+                  Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const SettingsScreen()),
                   );
                   break;
@@ -112,6 +118,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               ),
               const PopupMenuItem(
                 value: 5,
+                child: ListTile(
+                  leading: Icon(Icons.contacts_outlined),
+                  title: Text('Debtors/Creditors'),
+                ),
+              ),
+              const PopupMenuItem(
+                value: 6,
                 child: ListTile(
                   leading: Icon(Icons.settings_outlined),
                   title: Text('Settings'),

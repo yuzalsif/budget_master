@@ -1,16 +1,19 @@
-// lib/features/transactions/presentation/screens/add_edit_transaction_screen.dart
-
-import 'package:budget_master/domain/models/category.dart';
-import 'package:budget_master/domain/models/transaction.dart';
-import 'package:budget_master/features/accounts/application/account_providers.dart';
-import 'package:budget_master/features/categories/application/category_providers.dart';
-import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
-import 'package:budget_master/features/transactions/application/transaction_providers.dart';
-import 'package:budget_master/features/transactions/application/transaction_service.dart';
+import 'package:budget_master/features/contacts/application/contact_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:budget_master/domain/models/account.dart';
 import 'package:intl/intl.dart';
+
+import 'package:budget_master/domain/models/account.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/domain/models/transaction.dart';
+import 'package:budget_master/domain/models/contact.dart';
+
+import 'package:budget_master/features/accounts/application/account_providers.dart';
+import 'package:budget_master/features/categories/application/category_providers.dart';
+import 'package:budget_master/features/transactions/application/transaction_providers.dart';
+import 'package:budget_master/features/transactions/application/transaction_service.dart';
+import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
+import 'package:budget_master/features/debt_credit/application/debt_credit_service.dart';
 
 class AddEditTransactionScreen extends ConsumerStatefulWidget {
   final Transaction? transaction;
@@ -32,6 +35,7 @@ class _AddEditTransactionScreenState
   TransactionType _selectedType = TransactionType.withdrawal;
   Account? _selectedAccount;
   Category? _selectedCategory;
+  Contact? _selectedContact; // <-- 4. ADD STATE FOR SELECTED CONTACT
   DateTime _selectedDate = DateTime.now();
 
   bool get isEditMode => widget.transaction != null;
@@ -52,6 +56,8 @@ class _AddEditTransactionScreenState
       _selectedDate = txn.date;
       _selectedAccount = txn.account.target;
       _selectedCategory = txn.category.target;
+      _selectedContact =
+          txn.contact.target; // <-- 5. PRE-POPULATE CONTACT IN EDIT MODE
     }
     _dateController = TextEditingController(
       text: DateFormat.yMMMd().format(_selectedDate),
@@ -97,7 +103,6 @@ class _AddEditTransactionScreenState
 
     final amount = double.tryParse(_amountController.text) ?? 0.0;
 
-    // Create the transaction object
     final transaction = isEditMode ? widget.transaction! : Transaction();
     transaction
       ..amount = amount
@@ -105,11 +110,11 @@ class _AddEditTransactionScreenState
       ..date = _selectedDate
       ..description = _descriptionController.text;
 
-    // Crucially, we set the target for the ToOne links
     transaction.account.target = _selectedAccount;
     transaction.category.target = _selectedCategory;
+    transaction.contact.target =
+        _selectedContact; // <-- 6. SET THE CONTACT LINK ON SAVE
 
-    // Use the appropriate service method
     if (isEditMode) {
       ref.read(transactionServiceProvider).updateTransaction(transaction);
     } else {
@@ -120,17 +125,21 @@ class _AddEditTransactionScreenState
     ref.invalidate(accountsProvider);
     ref.invalidate(filteredTransactionsProvider);
     ref.invalidate(dashboardDataProvider);
+    ref.invalidate(
+      contactBalancesProvider,
+    ); // <-- 7. INVALIDATE THE DEBT/CREDIT PROVIDER
 
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    // We watch these providers to get the lists for our dropdowns
     final accounts = ref.watch(accountsProvider);
     final categories = ref.watch(categoriesProvider);
+    final contacts = ref.watch(
+      contactsProvider,
+    ); 
 
-    // Set initial dropdown values if not in edit mode
     if (!isEditMode) {
       _selectedAccount ??= accounts.isNotEmpty ? accounts.first : null;
       _selectedCategory ??= categories.isNotEmpty ? categories.first : null;
@@ -168,12 +177,12 @@ class _AddEditTransactionScreenState
                 segments: const [
                   ButtonSegment(
                     value: TransactionType.withdrawal,
-                    label: Text('Withdraw 💀'),
+                    label: Text('Expense'),
                     icon: Icon(Icons.arrow_downward),
                   ),
                   ButtonSegment(
                     value: TransactionType.deposit,
-                    label: Text('Deposit 💸'),
+                    label: Text('Income'),
                     icon: Icon(Icons.arrow_upward),
                   ),
                 ],
@@ -188,7 +197,8 @@ class _AddEditTransactionScreenState
 
               // Account Dropdown
               DropdownButtonFormField<Account>(
-                initialValue: _selectedAccount,
+                value:
+                    _selectedAccount, // Use value instead of initialValue for better state control
                 items: accounts
                     .map(
                       (acc) =>
@@ -208,7 +218,7 @@ class _AddEditTransactionScreenState
 
               // Category Dropdown
               DropdownButtonFormField<Category>(
-                initialValue: _selectedCategory,
+                value: _selectedCategory,
                 items: categories
                     .map(
                       (cat) =>
@@ -223,6 +233,33 @@ class _AddEditTransactionScreenState
                 ),
                 validator: (val) =>
                     val == null ? 'Please select a category' : null,
+              ),
+              const SizedBox(height: 16),
+
+              // --- 9. ADD THE CONTACT DROPDOWN ---
+              DropdownButtonFormField<Contact?>(
+                // Note the nullable type
+                value: _selectedContact,
+                items: [
+                  // This "None" option allows the user to clear the selection
+                  const DropdownMenuItem<Contact?>(
+                    value: null,
+                    child: Text('None (Regular Transaction)'),
+                  ),
+                  // The rest of the contacts
+                  ...contacts.map(
+                    (c) => DropdownMenuItem<Contact?>(
+                      value: c,
+                      child: Text(c.name),
+                    ),
+                  ),
+                ],
+                onChanged: (val) => setState(() => _selectedContact = val),
+                decoration: const InputDecoration(
+                  labelText: 'Link to Contact (Optional)',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person_outline),
+                ),
               ),
               const SizedBox(height: 16),
 
