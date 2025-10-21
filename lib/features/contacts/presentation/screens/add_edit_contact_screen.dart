@@ -52,6 +52,7 @@ class _AddEditContactScreenState extends ConsumerState<AddEditContactScreen> {
     ref.read(contactServiceProvider).deleteContact(widget.contact!.id);
     ref.invalidate(contactsProvider);
     Navigator.of(context).pop(); 
+  }
 
   @override
   Widget build(BuildContext context) {
