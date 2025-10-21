@@ -1,7 +1,6 @@
-// lib/features/contacts/presentation/screens/contacts_screen.dart
 
-import 'package:jbm/features/contacts/application/contact_providers.dart';
-import 'package:jbm/features/contacts/presentation/screens/add_edit_contact_screen.dart';
+import 'package:budget_master/features/contacts/application/contact_providers.dart';
+import 'package:budget_master/features/contacts/presentation/screens/add_edit_contact_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

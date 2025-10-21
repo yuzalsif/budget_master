@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/features/transactions/application/transaction_providers.dart';
+import 'package:budget_master/features/transactions/application/transaction_providers.dart';
 import 'package:intl/intl.dart';
 
 class CategoryTotalsScreen extends ConsumerWidget {
@@ -8,7 +8,6 @@ class CategoryTotalsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the provider to get the calculated totals
     final Map<String, ({double deposits, double withdrawals})> categoryTotals =
         ref.watch(monthlyCategoryTotalsProvider);
 

@@ -1,16 +1,15 @@
-import 'package:jbm/features/accounts/presentation/screens/account_detail_screen.dart';
-import 'package:jbm/features/accounts/presentation/screens/add_account_screen.dart';
+import 'package:budget_master/features/accounts/presentation/screens/account_detail_screen.dart';
+import 'package:budget_master/features/accounts/presentation/screens/add_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/domain/models/account.dart';
-import 'package:jbm/features/accounts/application/account_providers.dart';
+import 'package:budget_master/domain/models/account.dart';
+import 'package:budget_master/features/accounts/application/account_providers.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the simple StateProvider
     final List<Account> accounts = ref.watch(accountsProvider);
 
     return Scaffold(
@@ -23,7 +22,7 @@ class AccountsScreen extends ConsumerWidget {
               ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.all(8.0), // Add padding around the list
+              padding: const EdgeInsets.all(8.0), 
               itemCount: accounts.length,
               itemBuilder: (context, index) {
                 final account = accounts[index];
@@ -57,7 +56,6 @@ class AccountsScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     trailing: Text(
-                      // We'll use a number formatter for better currency display later
                       'TZS ${account.balance.toStringAsFixed(2)}',
                       style: TextStyle(
                         color: account.balance >= 0
@@ -82,7 +80,6 @@ class AccountsScreen extends ConsumerWidget {
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // Navigate to the new screen
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const AddAccountScreen()),
           );

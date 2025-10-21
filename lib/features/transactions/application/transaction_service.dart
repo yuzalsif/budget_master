@@ -1,16 +1,15 @@
-// lib/features/transactions/application/transaction_service.dart
 
-import 'package:jbm/domain/models/category.dart';
-import 'package:jbm/features/transactions/domain/transaction_filter.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/features/transactions/domain/transaction_filter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/core/providers/database_provider.dart';
-import 'package:jbm/domain/models/account.dart';
-import 'package:jbm/domain/models/transaction.dart';
-import 'package:jbm/objectbox.g.dart';
+import 'package:budget_master/core/providers/database_provider.dart';
+import 'package:budget_master/domain/models/account.dart';
+import 'package:budget_master/domain/models/transaction.dart';
+import 'package:budget_master/objectbox.g.dart';
 
 final transactionServiceProvider = Provider<TransactionService>((ref) {
   final store = ref.watch(objectboxProvider).value!;
-  return TransactionService(store); // Pass the whole store
+  return TransactionService(store);  
 });
 
 class TransactionService {
@@ -47,7 +46,6 @@ class TransactionService {
 
   Map<String, ({double deposits, double withdrawals})>
   getCategoryTotalsForAccount(int accountId) {
-    // 1. Build a query to get ALL transactions linked to this specific account.
     final query = _transactionBox
         .query(Transaction_.account.equals(accountId))
         .build();
@@ -80,14 +78,12 @@ class TransactionService {
 
   Map<String, ({double deposits, double withdrawals})>
   getAccountTotalsForCategory(int categoryId) {
-    // 1. Build a query to get ALL transactions linked to this specific category.
     final query = _transactionBox
         .query(Transaction_.category.equals(categoryId))
         .build();
     final transactions = query.find();
     query.close();
 
-    // 2. Process the results to group by account.
     final Map<String, ({double deposits, double withdrawals})> totals = {};
     for (var txn in transactions) {
       final accountName = txn.account.target?.name ?? 'Unknown Account';
@@ -118,10 +114,8 @@ class TransactionService {
   }) {
     final transferId = _getTransferCategoryId();
 
-    // 1. Get all transactions from the database first.
     final allTransactions = _transactionBox.getAll();
 
-    // 2. Filter them by date AND ensure they are NOT internal transfers.
     final transactionsInDateRange = allTransactions.where((txn) {
       final isDateValid =
           (txn.date.isAtSameMomentAs(startDate) ||
@@ -131,7 +125,6 @@ class TransactionService {
       return isDateValid && isNotTransfer;
     }).toList();
 
-    // 3. Process the filtered results to calculate totals.
     final Map<String, ({double deposits, double withdrawals})> totals = {};
     for (var txn in transactionsInDateRange) {
       final categoryName = txn.category.target?.name ?? 'Uncategorized';
@@ -165,7 +158,6 @@ class TransactionService {
     required DateTime date,
     String? description,
   }) {
-    // The only validation we need: source and destination cannot be identical.
     if (fromAccount.id == toAccount.id && fromCategory.id == toCategory.id) {
       throw Exception(
         "Cannot transfer to the exact same account and category.",
@@ -175,9 +167,7 @@ class TransactionService {
       throw Exception("Transfer amount must be positive.");
     }
 
-    // --- Create the two transactions ---
 
-    // 1. Withdrawal from the source
     final withdrawalTxn = Transaction()
       ..amount = amount
       ..type = TransactionType.withdrawal.index
@@ -187,7 +177,6 @@ class TransactionService {
     withdrawalTxn.account.target = fromAccount;
     withdrawalTxn.category.target = fromCategory;
 
-    // 2. Deposit into the destination
     final depositTxn = Transaction()
       ..amount = amount
       ..type = TransactionType.deposit.index
@@ -198,16 +187,12 @@ class TransactionService {
     depositTxn.account.target = toAccount;
     depositTxn.category.target = toCategory;
 
-    // --- Update account balances ONLY if the accounts are different ---
     if (fromAccount.id != toAccount.id) {
       fromAccount.balance -= amount;
       toAccount.balance += amount;
     }
-    // If accounts are the same, the net balance change is zero, so we do nothing.
 
-    // --- Perform all operations in a single database transaction ---
     _store.runInTransaction(TxMode.write, () {
-      // We only need to save the accounts if they were actually modified.
       if (fromAccount.id != toAccount.id) {
         _accountBox.putMany([fromAccount, toAccount]);
       }
@@ -216,38 +201,28 @@ class TransactionService {
   }
 
   void addTransaction(Transaction transaction) {
-    // 1. Get the account that this transaction is linked to.
     final account = transaction.account.target;
     if (account == null) {
       throw Exception('Transaction must have a valid account');
     }
 
-    // 2. Determine the new balance based on the transaction type.
     if (TransactionType.values[transaction.type] ==
         TransactionType.withdrawal) {
       account.balance -= transaction.amount;
     } else {
-      // Deposit
       account.balance += transaction.amount;
     }
 
-    // 3. Use a database transaction to ensure both operations succeed or fail together.
-    //    This prevents data corruption (e.g., adding a transaction record
-    //    but failing to update the balance).
     _store.runInTransaction(TxMode.write, () {
-      // First, save the updated account.
       _accountBox.put(account);
-      // Then, save the new transaction.
       _transactionBox.put(transaction);
     });
   }
 
   List<Transaction> getFilteredTransactions(TransactionFilter filter) {
-    // Start with a base query builder, ordered by date
     final queryBuilder = _transactionBox.query()
       ..order(Transaction_.date, flags: Order.descending);
 
-    // Conditionally add a filter for the account
     if (filter.accountId != null) {
       queryBuilder.link(
         Transaction_.account,
@@ -255,7 +230,6 @@ class TransactionService {
       );
     }
 
-    // Conditionally add a filter for the category
     if (filter.categoryId != null) {
       queryBuilder.link(
         Transaction_.category,
@@ -290,43 +264,7 @@ class TransactionService {
     }
   }
 
-  // Map<String, ({double deposits, double withdrawals})> getCategoryTotals({
-  //   required DateTime startDate,
-  //   required DateTime endDate,
-  // }) {
-  //   final allTransactions = _transactionBox.getAll();
-  //   final transactionsInDateRange = allTransactions.where((txn) {
-  //     return (txn.date.isAtSameMomentAs(startDate) ||
-  //             txn.date.isAfter(startDate)) &&
-  //         txn.date.isBefore(endDate);
-  //   }).toList();
-
-  //   // 3. Process the filtered results (this part is the same as before).
-  //   final Map<String, ({double deposits, double withdrawals})> totals = {};
-
-  //   for (var txn in transactionsInDateRange) {
-  //     final categoryName = txn.category.target?.name ?? 'Uncategorized';
-
-  //     var currentTotals =
-  //         totals[categoryName] ?? (deposits: 0.0, withdrawals: 0.0);
-
-  //     if (TransactionType.values[txn.type] == TransactionType.deposit) {
-  //       currentTotals = (
-  //         deposits: currentTotals.deposits + txn.amount,
-  //         withdrawals: currentTotals.withdrawals,
-  //       );
-  //     } else {
-  //       currentTotals = (
-  //         deposits: currentTotals.deposits,
-  //         withdrawals: currentTotals.withdrawals + txn.amount,
-  //       );
-  //     }
-
-  //     totals[categoryName] = currentTotals;
-  //   }
-
-  //   return totals;
-  // }
+  
 
   ({double income, double expense}) getIncomeExpenseTotals({
     required DateTime startDate,
@@ -334,7 +272,6 @@ class TransactionService {
   }) {
     final transferId = _getTransferCategoryId();
 
-    // Get all transactions and filter them in one go.
     final transactions = _transactionBox.getAll().where((txn) {
       final isDateValid =
           (txn.date.isAtSameMomentAs(startDate) ||
@@ -357,28 +294,6 @@ class TransactionService {
     return (income: income, expense: expense);
   }
 
-  // ({double income, double expense}) getIncomeExpenseTotals({
-  //   required DateTime startDate,
-  //   required DateTime endDate,
-  // }) {
-  //   final transactions = _transactionBox.getAll().where((txn) {
-  //     return (txn.date.isAtSameMomentAs(startDate) ||
-  //             txn.date.isAfter(startDate)) &&
-  //         txn.date.isBefore(endDate);
-  //   }).toList();
-
-  //   double income = 0;
-  //   double expense = 0;
-
-  //   for (var txn in transactions) {
-  //     if (TransactionType.values[txn.type] == TransactionType.deposit) {
-  //       income += txn.amount;
-  //     } else {
-  //       expense += txn.amount;
-  //     }
-  //   }
-  //   return (income: income, expense: expense);
-  // }
 
   void updateTransaction(Transaction updatedTransaction) {
     final oldTransaction = _transactionBox.get(updatedTransaction.id);
@@ -417,38 +332,27 @@ class TransactionService {
   }
 
   void deleteTransaction(int transactionId) {
-    // 1. Find the transaction we want to delete.
     final transaction = _transactionBox.get(transactionId);
     if (transaction == null) {
-      // Or handle this error more gracefully
       throw Exception('Transaction with id $transactionId not found.');
     }
 
-    // 2. Find the associated account.
     final account = transaction.account.target;
     if (account == null) {
-      // This case might happen if an account was deleted but transactions were not.
-      // For now, we'll just delete the transaction record.
       _transactionBox.remove(transactionId);
       return;
     }
 
     _store.runInTransaction(TxMode.write, () {
-      // 3. Revert the financial impact.
-      // If it was a withdrawal, we add the money back.
-      // If it was a deposit, we subtract the money.
       if (TransactionType.values[transaction.type] ==
           TransactionType.withdrawal) {
         account.balance += transaction.amount;
       } else {
-        // Deposit
         account.balance -= transaction.amount;
       }
 
-      // 4. Save the updated account balance.
       _accountBox.put(account);
 
-      // 5. Finally, delete the transaction record itself.
       _transactionBox.remove(transactionId);
     });
   }

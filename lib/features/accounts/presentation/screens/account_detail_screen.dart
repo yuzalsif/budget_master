@@ -1,6 +1,6 @@
-import 'package:jbm/domain/models/account.dart';
-import 'package:jbm/features/accounts/application/account_detail_providers.dart';
-import 'package:jbm/features/accounts/presentation/screens/add_account_screen.dart';
+import 'package:budget_master/domain/models/account.dart';
+import 'package:budget_master/features/accounts/application/account_detail_providers.dart';
+import 'package:budget_master/features/accounts/presentation/screens/add_account_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -11,14 +11,12 @@ class AccountDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Use the .family provider by passing in the account's ID
     final breakdown = ref.watch(accountCategoryBreakdownProvider(account.id));
     final currencyFormat = NumberFormat.currency(
       symbol: 'TZS ',
       decimalDigits: 0,
     );
 
-    // Calculate total inflow and outflow for the summary
     final totalInflow = breakdown.values.fold(
       0.0,
       (sum, item) => sum + item.deposits,
@@ -28,7 +26,6 @@ class AccountDetailScreen extends ConsumerWidget {
       (sum, item) => sum + item.withdrawals,
     );
 
-    // Sort the breakdown by net value for a more meaningful display
     final sortedBreakdown = breakdown.entries.toList()
       ..sort(
         (a, b) => (b.value.deposits - b.value.withdrawals).compareTo(
@@ -40,7 +37,6 @@ class AccountDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(account.name),
         actions: [
-          // The "Edit" button to navigate to the form
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () {
@@ -56,11 +52,10 @@ class AccountDetailScreen extends ConsumerWidget {
       ),
       body: CustomScrollView(
         slivers: [
-          // A modern, flexible header
           SliverAppBar(
             expandedHeight: 150.0,
             pinned: true,
-            automaticallyImplyLeading: false, // We already have a back button
+            automaticallyImplyLeading: false,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Column(
@@ -88,7 +83,6 @@ class AccountDetailScreen extends ConsumerWidget {
             ),
           ),
 
-          // Summary Cards
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -114,7 +108,6 @@ class AccountDetailScreen extends ConsumerWidget {
             ),
           ),
 
-          // Title for the breakdown list
           const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -125,7 +118,6 @@ class AccountDetailScreen extends ConsumerWidget {
             ),
           ),
 
-          // The list of category contributions
           if (sortedBreakdown.isEmpty)
             const SliverToBoxAdapter(
               child: Padding(
@@ -164,7 +156,6 @@ class AccountDetailScreen extends ConsumerWidget {
   }
 }
 
-// A helper widget for the summary cards to keep the build method clean
 class _SummaryCard extends StatelessWidget {
   final String title;
   final String value;

@@ -1,15 +1,14 @@
-// lib/features/transactions/presentation/screens/transactions_screen.dart
 
-import 'package:jbm/features/accounts/application/account_providers.dart';
-import 'package:jbm/features/categories/application/category_providers.dart';
-import 'package:jbm/features/transactions/application/transaction_providers.dart';
-import 'package:jbm/features/transactions/domain/transaction_filter.dart';
-import 'package:jbm/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
+import 'package:budget_master/features/accounts/application/account_providers.dart';
+import 'package:budget_master/features/categories/application/category_providers.dart';
+import 'package:budget_master/features/transactions/application/transaction_providers.dart';
+import 'package:budget_master/features/transactions/domain/transaction_filter.dart';
+import 'package:budget_master/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/domain/models/account.dart';
-import 'package:jbm/domain/models/category.dart';
-import 'package:jbm/domain/models/transaction.dart';
+import 'package:budget_master/domain/models/account.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/domain/models/transaction.dart';
 
 import 'package:intl/intl.dart';
 
@@ -18,7 +17,6 @@ class TransactionsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch our new provider to get the filtered list
     final filteredTransactions = ref.watch(filteredTransactionsProvider);
     final currencyFormat = NumberFormat.currency(
       symbol: 'TZS ',
@@ -29,7 +27,6 @@ class TransactionsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Transactions'),
         actions: [
-          // Add a button to clear all filters
           IconButton(
             icon: const Icon(Icons.clear_all_rounded),
             onPressed: () {
@@ -42,10 +39,8 @@ class TransactionsScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          // The Filter Bar UI
           _FilterBar(),
           const Divider(height: 1),
-          // The list of transactions
           Expanded(
             child: filteredTransactions.isEmpty
                 ? const Center(
@@ -58,7 +53,6 @@ class TransactionsScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(8.0),
                     itemCount: filteredTransactions.length,
                     itemBuilder: (context, index) {
-                      // The list item UI remains the same as before
                       final transaction = filteredTransactions[index];
                       final account = transaction.account.target;
                       final category = transaction.category.target;
@@ -115,7 +109,6 @@ class TransactionsScreen extends ConsumerWidget {
   }
 }
 
-// A dedicated widget for the filter controls to keep the build method clean
 class _FilterBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -128,7 +121,6 @@ class _FilterBar extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         children: [
-          // Account Filter Chip
           FilterChip(
             label: Text(
               accounts
@@ -151,7 +143,6 @@ class _FilterBar extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
 
-          // Category Filter Chip
           FilterChip(
             label: Text(
               categories
@@ -174,7 +165,6 @@ class _FilterBar extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
 
-          // Date Filter with a PopupMenu
           PopupMenuButton<DateFilter>(
             initialValue: currentFilter.dateFilter,
             onSelected: (newFilter) {

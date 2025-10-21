@@ -1,11 +1,10 @@
-// lib/features/accounts/presentation/screens/add_account_screen.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/domain/models/account.dart';
-import 'package:jbm/features/accounts/application/account_providers.dart';
-import 'package:jbm/features/accounts/application/account_service.dart';
+import 'package:budget_master/domain/models/account.dart';
+import 'package:budget_master/features/accounts/application/account_providers.dart';
+import 'package:budget_master/features/accounts/application/account_service.dart';
 
 class AddAccountScreen extends ConsumerStatefulWidget {
   final Account? account;
@@ -39,27 +38,22 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   }
 
   void _saveAccount() {
-    // 1. Validate the form
     if (_formKey.currentState!.validate()) {
-      // 2. Extract data
       final name = _nameController.text;
       final balance = double.tryParse(_balanceController.text) ?? 0.0;
 
       if (isEditMode) {
-        // We are editing an existing account
         final updatedAccount = widget.account!
           ..name = name
           ..balance = balance;
         ref.read(accountServiceProvider).updateAccount(updatedAccount);
       } else {
-        // We are adding a new account
         final newAccount = Account()
           ..name = name
           ..balance = balance;
         ref.read(accountServiceProvider).addAccount(newAccount);
       }
 
-      // Refresh the list and go back (this logic remains the same)
       ref.read(accountsProvider.notifier).state = ref
           .read(accountServiceProvider)
           .getAllAccounts();
@@ -68,7 +62,6 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   }
 
   void _deleteAccount() {
-    // Show a confirmation dialog before deleting
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -91,17 +84,14 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
               ),
               child: const Text('Delete'),
               onPressed: () {
-                // Delete the account
                 ref
                     .read(accountServiceProvider)
                     .deleteAccount(widget.account!.id);
 
-                // Refresh the list
                 ref.read(accountsProvider.notifier).state = ref
                     .read(accountServiceProvider)
                     .getAllAccounts();
 
-                // Pop twice: once for the dialog, once for the edit screen
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
@@ -116,9 +106,7 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // The title is now dynamic
         title: Text(isEditMode ? 'Edit Account' : 'Add New Account'),
-        // Add a delete button to the app bar ONLY in edit mode
         actions: [
           if (isEditMode)
             IconButton(
@@ -139,7 +127,6 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Account Name Field
                 TextFormField(
                   controller: _nameController,
                   decoration: const InputDecoration(
@@ -156,7 +143,6 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                   },
                 ),
                 const SizedBox(height: 24),
-                // Initial Balance Field
                 TextFormField(
                   controller: _balanceController,
                   decoration: const InputDecoration(
@@ -183,7 +169,6 @@ class _AddAccountScreenState extends ConsumerState<AddAccountScreen> {
                   },
                 ),
                 const SizedBox(height: 32),
-                // Save Button
                 ElevatedButton.icon(
                   onPressed: _saveAccount,
                   icon: const Icon(Icons.save_alt_outlined),

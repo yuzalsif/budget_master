@@ -1,11 +1,9 @@
-// lib/features/categories/application/category_service.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/core/providers/database_provider.dart';
-import 'package:jbm/domain/models/category.dart';
-import 'package:jbm/objectbox.g.dart';
+import 'package:budget_master/core/providers/database_provider.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/objectbox.g.dart';
 
-// Provider to access our service class
 final categoryServiceProvider = Provider<CategoryService>((ref) {
   final store = ref.watch(objectboxProvider).value!;
   return CategoryService(store.box<Category>());

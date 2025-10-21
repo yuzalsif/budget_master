@@ -1,19 +1,19 @@
-import 'package:jbm/features/contacts/application/contact_providers.dart';
+import 'package:budget_master/features/contacts/application/contact_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import 'package:jbm/domain/models/account.dart';
-import 'package:jbm/domain/models/category.dart';
-import 'package:jbm/domain/models/transaction.dart';
-import 'package:jbm/domain/models/contact.dart';
+import 'package:budget_master/domain/models/account.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/domain/models/transaction.dart';
+import 'package:budget_master/domain/models/contact.dart';
 
-import 'package:jbm/features/accounts/application/account_providers.dart';
-import 'package:jbm/features/categories/application/category_providers.dart';
-import 'package:jbm/features/transactions/application/transaction_providers.dart';
-import 'package:jbm/features/transactions/application/transaction_service.dart';
-import 'package:jbm/features/dashboard/application/dashboard_providers.dart';
-import 'package:jbm/features/debt_credit/application/debt_credit_service.dart';
+import 'package:budget_master/features/accounts/application/account_providers.dart';
+import 'package:budget_master/features/categories/application/category_providers.dart';
+import 'package:budget_master/features/transactions/application/transaction_providers.dart';
+import 'package:budget_master/features/transactions/application/transaction_service.dart';
+import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
+import 'package:budget_master/features/debt_credit/application/debt_credit_service.dart';
 
 class AddEditTransactionScreen extends ConsumerStatefulWidget {
   final Transaction? transaction;
@@ -35,7 +35,7 @@ class _AddEditTransactionScreenState
   TransactionType _selectedType = TransactionType.withdrawal;
   Account? _selectedAccount;
   Category? _selectedCategory;
-  Contact? _selectedContact; // <-- 4. ADD STATE FOR SELECTED CONTACT
+  Contact? _selectedContact; 
   DateTime _selectedDate = DateTime.now();
 
   bool get isEditMode => widget.transaction != null;
@@ -57,7 +57,7 @@ class _AddEditTransactionScreenState
       _selectedAccount = txn.account.target;
       _selectedCategory = txn.category.target;
       _selectedContact =
-          txn.contact.target; // <-- 5. PRE-POPULATE CONTACT IN EDIT MODE
+          txn.contact.target; 
     }
     _dateController = TextEditingController(
       text: DateFormat.yMMMd().format(_selectedDate),
@@ -113,7 +113,7 @@ class _AddEditTransactionScreenState
     transaction.account.target = _selectedAccount;
     transaction.category.target = _selectedCategory;
     transaction.contact.target =
-        _selectedContact; // <-- 6. SET THE CONTACT LINK ON SAVE
+        _selectedContact;  
 
     if (isEditMode) {
       ref.read(transactionServiceProvider).updateTransaction(transaction);
@@ -121,13 +121,12 @@ class _AddEditTransactionScreenState
       ref.read(transactionServiceProvider).addTransaction(transaction);
     }
 
-    // Refresh all relevant providers
     ref.invalidate(accountsProvider);
     ref.invalidate(filteredTransactionsProvider);
     ref.invalidate(dashboardDataProvider);
     ref.invalidate(
       contactBalancesProvider,
-    ); // <-- 7. INVALIDATE THE DEBT/CREDIT PROVIDER
+    ); 
 
     Navigator.of(context).pop();
   }
@@ -154,7 +153,6 @@ class _AddEditTransactionScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Amount
               TextFormField(
                 controller: _amountController,
                 decoration: const InputDecoration(
@@ -170,7 +168,6 @@ class _AddEditTransactionScreenState
               ),
               const SizedBox(height: 16),
 
-              // Transaction Type Toggle
               SegmentedButton<TransactionType>(
                 segments: const [
                   ButtonSegment(
@@ -193,10 +190,9 @@ class _AddEditTransactionScreenState
               ),
               const SizedBox(height: 24),
 
-              // Account Dropdown
               DropdownButtonFormField<Account>(
                 value:
-                    _selectedAccount, // Use value instead of initialValue for better state control
+                    _selectedAccount, 
                 items: accounts
                     .map(
                       (acc) =>
@@ -214,7 +210,6 @@ class _AddEditTransactionScreenState
               ),
               const SizedBox(height: 16),
 
-              // Category Dropdown
               DropdownButtonFormField<Category>(
                 value: _selectedCategory,
                 items: categories
@@ -234,17 +229,13 @@ class _AddEditTransactionScreenState
               ),
               const SizedBox(height: 16),
 
-              // --- 9. ADD THE CONTACT DROPDOWN ---
               DropdownButtonFormField<Contact?>(
-                // Note the nullable type
                 value: _selectedContact,
                 items: [
-                  // This "None" option allows the user to clear the selection
                   const DropdownMenuItem<Contact?>(
                     value: null,
                     child: Text('None (Regular Transaction)'),
                   ),
-                  // The rest of the contacts
                   ...contacts.map(
                     (c) => DropdownMenuItem<Contact?>(
                       value: c,
@@ -261,7 +252,6 @@ class _AddEditTransactionScreenState
               ),
               const SizedBox(height: 16),
 
-              // Date Picker
               TextFormField(
                 controller: _dateController,
                 decoration: const InputDecoration(
@@ -274,7 +264,6 @@ class _AddEditTransactionScreenState
               ),
               const SizedBox(height: 16),
 
-              // Description
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(

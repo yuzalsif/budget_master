@@ -1,11 +1,10 @@
-// lib/features/transactions/presentation/screens/money_transfer_screen.dart
 
-import 'package:jbm/domain/models/account.dart';
-import 'package:jbm/domain/models/category.dart';
-import 'package:jbm/features/accounts/application/account_providers.dart';
-import 'package:jbm/features/categories/application/category_providers.dart';
-import 'package:jbm/features/dashboard/application/dashboard_providers.dart';
-import 'package:jbm/features/transactions/application/transaction_service.dart';
+import 'package:budget_master/domain/models/account.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/features/accounts/application/account_providers.dart';
+import 'package:budget_master/features/categories/application/category_providers.dart';
+import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
+import 'package:budget_master/features/transactions/application/transaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,7 +89,6 @@ class _MoneyTransferScreenState extends ConsumerState<MoneyTransferScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Amount (unchanged)
               TextFormField(
                 controller: _amountController,
                 decoration: const InputDecoration(
@@ -110,7 +108,6 @@ class _MoneyTransferScreenState extends ConsumerState<MoneyTransferScreen> {
               ),
               const SizedBox(height: 24),
 
-              // --- SOURCE ---
               Text('From', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               Row(
@@ -118,8 +115,8 @@ class _MoneyTransferScreenState extends ConsumerState<MoneyTransferScreen> {
                   Expanded(
                     child: DropdownButtonFormField<Account>(
                       value: _fromAccount,
-                      isExpanded: true, // <-- THE FIX
-                      itemHeight: kMinInteractiveDimension, // <-- THE FIX
+                      isExpanded: true, 
+                      itemHeight: kMinInteractiveDimension, 
                       items: accounts
                           .map(
                             (acc) => DropdownMenuItem(
@@ -143,8 +140,8 @@ class _MoneyTransferScreenState extends ConsumerState<MoneyTransferScreen> {
                   Expanded(
                     child: DropdownButtonFormField<Category>(
                       value: _fromCategory,
-                      isExpanded: true, // <-- THE FIX
-                      itemHeight: kMinInteractiveDimension, // <-- THE FIX
+                      isExpanded: true, 
+                      itemHeight: kMinInteractiveDimension, 
                       items: categories
                           .map(
                             (cat) => DropdownMenuItem(
@@ -172,7 +169,6 @@ class _MoneyTransferScreenState extends ConsumerState<MoneyTransferScreen> {
                 child: Icon(Icons.arrow_downward_rounded),
               ),
 
-              // --- DESTINATION ---
               Text('To', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               Row(
@@ -180,8 +176,8 @@ class _MoneyTransferScreenState extends ConsumerState<MoneyTransferScreen> {
                   Expanded(
                     child: DropdownButtonFormField<Account>(
                       value: _toAccount,
-                      isExpanded: true, // <-- THE FIX
-                      itemHeight: kMinInteractiveDimension, // <-- THE FIX
+                      isExpanded: true, 
+                      itemHeight: kMinInteractiveDimension, 
                       items: accounts
                           .map(
                             (acc) => DropdownMenuItem(
@@ -205,8 +201,8 @@ class _MoneyTransferScreenState extends ConsumerState<MoneyTransferScreen> {
                   Expanded(
                     child: DropdownButtonFormField<Category>(
                       value: _toCategory,
-                      isExpanded: true, // <-- THE FIX
-                      itemHeight: kMinInteractiveDimension, // <-- THE FIX
+                      isExpanded: true, 
+                      itemHeight: kMinInteractiveDimension, 
                       items: categories
                           .map(
                             (cat) => DropdownMenuItem(
@@ -230,7 +226,6 @@ class _MoneyTransferScreenState extends ConsumerState<MoneyTransferScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Description and Button (unchanged)
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(

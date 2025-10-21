@@ -1,6 +1,6 @@
-import 'package:jbm/domain/models/category.dart';
-import 'package:jbm/features/categories/application/category_providers.dart';
-import 'package:jbm/features/categories/application/category_service.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/features/categories/application/category_providers.dart';
+import 'package:budget_master/features/categories/application/category_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -56,7 +56,6 @@ class _AddEditCategoryScreenState extends ConsumerState<AddEditCategoryScreen> {
         ref.read(categoryServiceProvider).addCategory(newCategory);
       }
 
-      // Refresh state and navigate back
       ref.read(categoriesProvider.notifier).state = ref
           .read(categoryServiceProvider)
           .getAllCategories();

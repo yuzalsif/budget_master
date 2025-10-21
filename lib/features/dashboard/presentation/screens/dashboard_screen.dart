@@ -1,14 +1,14 @@
-import 'package:jbm/features/debt_credit/presentation/screens/debt_credit_screen.dart';
-import 'package:jbm/features/settings/presentation/screens/settings_screen.dart';
-import 'package:jbm/features/transactions/presentation/screens/money_transfer_screen.dart';
+import 'package:budget_master/features/debt_credit/presentation/screens/debt_credit_screen.dart';
+import 'package:budget_master/features/settings/presentation/screens/settings_screen.dart';
+import 'package:budget_master/features/transactions/presentation/screens/money_transfer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/features/accounts/presentation/screens/accounts_screen.dart';
-import 'package:jbm/features/categories/presentation/screens/categories_screen.dart';
-import 'package:jbm/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
-import 'package:jbm/features/transactions/presentation/screens/transactions_screen.dart';
-import 'package:jbm/features/dashboard/application/dashboard_providers.dart';
+import 'package:budget_master/features/accounts/presentation/screens/accounts_screen.dart';
+import 'package:budget_master/features/categories/presentation/screens/categories_screen.dart';
+import 'package:budget_master/features/transactions/presentation/screens/add_edit_transaction_screen.dart';
+import 'package:budget_master/features/transactions/presentation/screens/transactions_screen.dart';
+import 'package:budget_master/features/dashboard/application/dashboard_providers.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -170,11 +170,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- Filter Chips ---
               _FilterChips(),
               const SizedBox(height: 20),
 
-              // --- KPI Cards ---
               Row(
                 children: [
                   Expanded(
@@ -218,7 +216,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               ),
               const SizedBox(height: 24),
 
-              // --- Breakdown Charts Section with Pie Charts ---
               TabBar(
                 controller: _tabController,
                 tabs: const [
@@ -335,7 +332,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 }
 
-// --- Helper Widgets for Cleaner Code (KPI and FilterChips are unchanged) ---
 
 class _FilterChips extends ConsumerWidget {
   Future<void> _selectCustomDateRange(
@@ -350,7 +346,6 @@ class _FilterChips extends ConsumerWidget {
     );
 
     if (pickedRange != null) {
-      // If the user picked a range, update the provider state
       ref.read(dashboardFilterProvider.notifier).state = DashboardFilterState(
         filter: DashboardDateFilter.custom,
         dateRange: pickedRange,
@@ -360,7 +355,6 @@ class _FilterChips extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // We now watch the provider to get the full DashboardFilterState object
     final currentFilterState = ref.watch(dashboardFilterProvider);
     final dateFormat = DateFormat.yMMMd();
 
@@ -372,7 +366,6 @@ class _FilterChips extends ConsumerWidget {
           final isSelected = currentFilterState.filter == filter;
           String label;
 
-          // Create a dynamic label for the custom chip
           if (filter == DashboardDateFilter.custom &&
               currentFilterState.dateRange != null &&
               isSelected) {
@@ -390,10 +383,8 @@ class _FilterChips extends ConsumerWidget {
               onSelected: (isSelected) {
                 if (isSelected) {
                   if (filter == DashboardDateFilter.custom) {
-                    // If "Custom" is tapped, show the date picker
                     _selectCustomDateRange(context, ref);
                   } else {
-                    // For other filters, update the state normally
                     ref.read(dashboardFilterProvider.notifier).state =
                         DashboardFilterState(filter: filter);
                   }
@@ -443,14 +434,12 @@ class _KpiCard extends StatelessWidget {
   }
 }
 
-// --- NEW/UPDATED WIDGETS FOR PIE CHART ---
 
 class _CategoryPieChart extends StatelessWidget {
   final Map<String, double> data;
   final Color baseColor;
   const _CategoryPieChart({required this.data, required this.baseColor});
 
-  // A list of colors to use for the pie chart slices.
   static const List<Color> _colorPalette = [
     Colors.blue,
     Colors.green,
@@ -480,7 +469,6 @@ class _CategoryPieChart extends StatelessWidget {
 
     return Row(
       children: [
-        // The Pie Chart
         Expanded(
           flex: 2,
           child: PieChart(
@@ -495,7 +483,7 @@ class _CategoryPieChart extends StatelessWidget {
                 return PieChartSectionData(
                   color:
                       _colorPalette[index %
-                          _colorPalette.length], // Cycle through colors
+                          _colorPalette.length],
                   value: dataEntry.value,
                   title: '${percentage.toStringAsFixed(0)}%',
                   radius: 50,
@@ -509,7 +497,6 @@ class _CategoryPieChart extends StatelessWidget {
             ),
           ),
         ),
-        // The Legend
         Expanded(flex: 1, child: _ChartLegend(chartData: chartData)),
       ],
     );
@@ -520,7 +507,6 @@ class _ChartLegend extends StatelessWidget {
   const _ChartLegend({required this.chartData});
   final List<MapEntry<String, double>> chartData;
 
-  // Use the same palette as the chart
   static const List<Color> _colorPalette = [
     Colors.blue,
     Colors.green,

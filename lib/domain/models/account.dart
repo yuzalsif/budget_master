@@ -1,15 +1,14 @@
 import 'package:objectbox/objectbox.dart';
 
-@Entity() // Changed from @collection
+@Entity() 
 class Account {
-  @Id() // Changed from Id
+  @Id() 
   int id = 0;
 
-  @Unique() // Changed from @Index(unique: true)
+  @Unique() 
   late String name;
 
   late double balance;
 
-  // No-args constructor is required by ObjectBox
   Account();
 }

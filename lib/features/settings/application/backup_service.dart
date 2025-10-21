@@ -1,15 +1,13 @@
-// lib/features/settings/application/backup_service.dart
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:path/path.dart' as p;
-import 'package:jbm/core/providers/database_provider.dart';
-import 'package:jbm/objectbox.g.dart';
+import 'package:budget_master/core/providers/database_provider.dart';
+import 'package:budget_master/objectbox.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-// An authenticated HTTP client... (this class is unchanged)
 class GoogleAuthClient extends http.BaseClient {
   final Map<String, String> _headers;
   final http.Client _client = http.Client();
@@ -21,16 +19,13 @@ class GoogleAuthClient extends http.BaseClient {
 }
 
 final backupServiceProvider = FutureProvider<BackupService>((ref) async {
-  // It waits for the database to be ready first.
   final store = await ref.watch(objectboxProvider.future);
 
-  // Then it creates and initializes the service.
   final service = BackupService(store);
   await service.init();
   return service;
 });
 
-// This provider depends on the service being ready.
 final lastBackupProvider = StateProvider<String>((ref) {
   final backupService = ref.watch(backupServiceProvider);
   return backupService.asData?.value.getLastBackupInfo() ?? 'Loading...';
@@ -45,11 +40,7 @@ class BackupService {
 
   BackupService(this._store);
 
-  // --- THIS IS THE FINAL FIX ---
-  // Use the singleton instance provided by the package.
-  // The scopes are now handled by the initialize() call in main.dart.
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
-  // -----------------------------
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();

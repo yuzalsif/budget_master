@@ -1,5 +1,5 @@
-import 'package:jbm/features/contacts/presentation/screens/add_edit_contact_screen.dart';
-import 'package:jbm/features/debt_credit/application/debt_credit_service.dart';
+import 'package:budget_master/features/contacts/presentation/screens/add_edit_contact_screen.dart';
+import 'package:budget_master/features/debt_credit/application/debt_credit_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +15,6 @@ class DebtCreditScreen extends ConsumerWidget {
       decimalDigits: 0,
     );
 
-    // Separate debtors (they owe me, positive balance) from creditors (I owe them, negative balance)
     final debtors = balances.entries.where((e) => e.value > 0).toList();
     final creditors = balances.entries.where((e) => e.value < 0).toList();
 
@@ -64,7 +63,6 @@ class DebtCreditScreen extends ConsumerWidget {
             ),
           ),
 
-          // --- DEBTORS LIST ---
           const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -103,7 +101,6 @@ class DebtCreditScreen extends ConsumerWidget {
 
           const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
-          // --- CREDITORS LIST ---
           const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -145,7 +142,6 @@ class DebtCreditScreen extends ConsumerWidget {
   }
 }
 
-// Reusable summary card
 class _SummaryCard extends StatelessWidget {
   final String title;
   final String value;

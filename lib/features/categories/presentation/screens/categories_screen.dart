@@ -1,10 +1,10 @@
-import 'package:jbm/features/categories/presentation/screens/category_detail_screen.dart';
-import 'package:jbm/features/categories/presentation/screens/category_totals_screen.dart';
+import 'package:budget_master/features/categories/presentation/screens/category_detail_screen.dart';
+import 'package:budget_master/features/categories/presentation/screens/category_totals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/domain/models/category.dart';
-import 'package:jbm/features/categories/application/category_providers.dart';
-import 'package:jbm/features/categories/presentation/screens/add_edit_category_screen.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/features/categories/application/category_providers.dart';
+import 'package:budget_master/features/categories/presentation/screens/add_edit_category_screen.dart';
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({super.key});
@@ -53,7 +53,6 @@ class CategoriesScreen extends ConsumerWidget {
               itemCount: categories.length,
               itemBuilder: (context, index) {
                 final category = categories[index];
-                // Get the enum from the integer
                 final categoryType = CategoryType.values[category.type];
 
                 return Card(
@@ -121,9 +120,7 @@ class CategoriesScreen extends ConsumerWidget {
     }
   }
 
-  // Helper function to get a display string for the enum
   String _getCategoryTypeName(CategoryType type) {
-    // Take the enum name (e.g., "expense"), and capitalize the first letter.
     return type.name[0].toUpperCase() + type.name.substring(1);
   }
 }

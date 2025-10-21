@@ -1,9 +1,9 @@
-import 'package:jbm/features/dashboard/presentation/screens/dashboard_screen.dart';
-import 'package:jbm/features/settings/application/theme_service.dart';
+import 'package:budget_master/features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'package:budget_master/features/settings/application/theme_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jbm/app/theme/app_theme.dart';
-import 'package:jbm/core/providers/database_provider.dart';
+import 'package:budget_master/app/theme/app_theme.dart';
+import 'package:budget_master/core/providers/database_provider.dart';
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
@@ -26,7 +26,7 @@ class MyApp extends ConsumerWidget {
           body: Center(child: Text('Error initializing database: $err')),
         ),
         data: (isar) =>
-            const DashboardScreen(), // When DB is ready, show our home page
+            const DashboardScreen(), 
       ),
     );
   }

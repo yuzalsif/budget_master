@@ -1,6 +1,6 @@
-import 'package:jbm/domain/models/category.dart';
-import 'package:jbm/features/categories/application/category_detail_providers.dart';
-import 'package:jbm/features/categories/presentation/screens/add_edit_category_screen.dart';
+import 'package:budget_master/domain/models/category.dart';
+import 'package:budget_master/features/categories/application/category_detail_providers.dart';
+import 'package:budget_master/features/categories/presentation/screens/add_edit_category_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -15,14 +15,12 @@ class CategoryDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Use the .family provider by passing in the category's ID
     final breakdown = ref.watch(categoryAccountBreakdownProvider(category.id));
     final currencyFormat = NumberFormat.currency(
       symbol: 'TZS ',
       decimalDigits: 0,
     );
 
-    // Calculate total inflow and outflow for the summary
     final totalInflow = breakdown.values.fold(
       0.0,
       (sum, item) => sum + item.deposits,
@@ -44,7 +42,6 @@ class CategoryDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(category.name),
         actions: [
-          // The "Edit" button to navigate to the form
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () {
@@ -61,7 +58,6 @@ class CategoryDetailScreen extends ConsumerWidget {
       ),
       body: CustomScrollView(
         slivers: [
-          // A modern, flexible header
           SliverAppBar(
             expandedHeight: 150.0,
             pinned: true,
@@ -96,7 +92,6 @@ class CategoryDetailScreen extends ConsumerWidget {
             ),
           ),
 
-          // Summary Cards
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -122,7 +117,6 @@ class CategoryDetailScreen extends ConsumerWidget {
             ),
           ),
 
-          // Title for the breakdown list
           const SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -133,7 +127,6 @@ class CategoryDetailScreen extends ConsumerWidget {
             ),
           ),
 
-          // The list of account contributions
           if (sortedBreakdown.isEmpty)
             const SliverToBoxAdapter(
               child: Padding(
@@ -172,7 +165,6 @@ class CategoryDetailScreen extends ConsumerWidget {
   }
 }
 
-// A helper widget for the summary cards to keep the build method clean
 class _SummaryCard extends StatelessWidget {
   final String title;
   final String value;

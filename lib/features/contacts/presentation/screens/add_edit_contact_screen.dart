@@ -1,6 +1,6 @@
-import 'package:jbm/domain/models/contact.dart';
-import 'package:jbm/features/contacts/application/contact_providers.dart';
-import 'package:jbm/features/contacts/application/contact_service.dart';
+import 'package:budget_master/domain/models/contact.dart';
+import 'package:budget_master/features/contacts/application/contact_providers.dart';
+import 'package:budget_master/features/contacts/application/contact_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,17 +43,15 @@ class _AddEditContactScreenState extends ConsumerState<AddEditContactScreen> {
         ref.read(contactServiceProvider).addContact(newContact);
       }
 
-      ref.invalidate(contactsProvider); // Refresh the list
+      ref.invalidate(contactsProvider); 
       Navigator.of(context).pop();
     }
   }
 
   void _deleteContact() {
-    // A delete confirmation dialog would go here
     ref.read(contactServiceProvider).deleteContact(widget.contact!.id);
     ref.invalidate(contactsProvider);
-    Navigator.of(context).pop(); // Go back after deleting
-  }
+    Navigator.of(context).pop(); 
 
   @override
   Widget build(BuildContext context) {
